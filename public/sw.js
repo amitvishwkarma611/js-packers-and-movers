@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jaiswal-packers-v3';
+const CACHE_NAME = 'jaiswal-packers-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -22,6 +22,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -30,14 +31,60 @@ self.addEventListener('install', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
 self.addEventListener('fetch', event => {
+  // Network First for navigation requests (HTML)
+  const acceptHeader = event.request.headers.get('accept');
+  if (event.request.mode === 'navigate' || (acceptHeader && acceptHeader.includes('text/html'))) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, response.clone());
+            return response;
+          });
+        })
+        .catch(() => {
+          return caches.match(event.request).then(response => {
+            if (response) return response;
+            return caches.match('/');
+          });
+        })
+    );
+    return;
+  }
+
+  // Cache First for other assets (images, etc.)
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        return fetch(event.request).then(response => {
+          // Don't cache opaque responses or non-success responses
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        });
       })
   );
 });
