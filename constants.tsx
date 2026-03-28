@@ -154,19 +154,7 @@ export const ICONS = {
     </svg>
   ),
   Logo: (props: any) => (
-    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" {...props}>
-      {/* Truck Body */}
-      <path d="M100 300h250v100H100z" fill="#2563eb" />
-      <path d="M350 330h80l20 70h-100z" fill="#1e40af" />
-      {/* Wheels */}
-      <circle cx="150" cy="420" r="25" fill="#1e293b" />
-      <circle cx="380" cy="420" r="25" fill="#1e293b" />
-      {/* Clock/Checkmark Circle */}
-      <circle cx="250" cy="250" r="100" fill="none" stroke="#f59e0b" strokeWidth="20" />
-      <path d="M200 250l40 40 80-80" fill="none" stroke="#f59e0b" strokeWidth="20" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Speed Lines */}
-      <path d="M50 310h40M40 340h50M60 370h30" stroke="#2563eb" strokeWidth="10" strokeLinecap="round" />
-    </svg>
+    <img src="/icon.png" alt="Logo" {...props} />
   ),
   Clock: (props: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
