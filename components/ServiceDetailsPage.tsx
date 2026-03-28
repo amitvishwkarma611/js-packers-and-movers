@@ -180,10 +180,13 @@ export const interCityMovingServices: ServiceItem[] = [
 
 interface ServiceDetailsPageProps {
   onBack: () => void;
-  onProceed: () => void;
+  onProceed: (cart: { [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }) => void;
+  cart: { [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } };
+  setCart: React.Dispatch<React.SetStateAction<{ [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }>>;
+  onCartClick: () => void;
 }
 
-const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProceed }) => {
+const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProceed, cart, setCart, onCartClick }) => {
   const [selectedCategory, setSelectedCategory] = useState<'LOCAL' | 'INTERCITY'>('LOCAL');
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [selectedServiceForInfo, setSelectedServiceForInfo] = useState<ServiceItem | null>(null);
@@ -195,6 +198,41 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
     setIsInfoModalOpen(true);
   };
 
+  const updateQuantity = (serviceId: string, delta: number, extraItems: number = 0, extraInventory?: { [key: string]: number }) => {
+    setCart(prev => {
+      const current = prev[serviceId] || { quantity: 0, extraItems: 0 };
+      const newQty = Math.max(0, current.quantity + delta);
+      
+      const newCart = { ...prev };
+      if (newQty === 0) {
+        delete newCart[serviceId];
+      } else {
+        const updatedItem: any = { 
+          quantity: newQty, 
+          extraItems: delta > 0 ? extraItems : current.extraItems
+        };
+        
+        const newExtraInventory = delta > 0 ? extraInventory : current.extraInventory;
+        if (newExtraInventory !== undefined) {
+          updatedItem.extraInventory = newExtraInventory;
+        }
+        
+        newCart[serviceId] = updatedItem;
+      }
+      return newCart;
+    });
+  };
+
+  const cartTotal = Object.entries(cart).reduce((total: number, [id, item]: [string, { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } }]) => {
+    const service = [...localMovingServices, ...interCityMovingServices].find(s => s.id === id);
+    if (!service) return total;
+    const basePrice = parseInt(service.price.replace(/[₹,]/g, ''));
+    const extraPrice = item.extraItems * 500;
+    return total + ((basePrice + extraPrice) * item.quantity);
+  }, 0);
+
+  const cartItemCount: number = (Object.values(cart) as { quantity: number }[]).reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+
   return (
     <div className="bg-white min-h-screen pb-40 animate-fadeIn">
       {/* Top App Bar */}
@@ -203,7 +241,16 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
           <ArrowLeft className="w-6 h-6 text-slate-900" />
         </button>
         <h1 className="flex-1 text-center font-bold text-slate-900">Packers Movers Local</h1>
-        <div className="w-10" />
+        <div className="relative" onClick={onCartClick}>
+          <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
+            <ShoppingCart className="w-5 h-5" />
+          </div>
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+              {cartItemCount}
+            </span>
+          )}
+        </div>
       </header>
 
       {/* Top Banner Section */}
@@ -281,24 +328,65 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
                   <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
                 </div>
                 
-                <button 
-                  onClick={onProceed}
-                  className="w-full py-2.5 bg-white border border-blue-600 text-blue-600 rounded-xl font-black text-sm hover:bg-blue-50 transition-all shadow-sm"
-                >
-                  Select
-                </button>
+                {cart[service.id] ? (
+                  <div className="w-full flex items-center justify-between bg-white border border-blue-600 rounded-xl overflow-hidden shadow-sm">
+                    <button 
+                      onClick={() => updateQuantity(service.id, -1)}
+                      className="px-3 py-2.5 text-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                      -
+                    </button>
+                    <span className="font-black text-blue-600">{cart[service.id].quantity}</span>
+                    <button 
+                      onClick={() => updateQuantity(service.id, 1)}
+                      className="px-3 py-2.5 text-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => updateQuantity(service.id, 1)}
+                    className="w-full py-2.5 bg-white border border-blue-600 text-blue-600 rounded-xl font-black text-sm hover:bg-blue-50 transition-all shadow-sm"
+                  >
+                    Add
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </section>
 
+      {/* Sticky Bottom Cart Bar */}
+      <AnimatePresence>
+        {cartItemCount > 0 && (
+          <motion.div 
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 pt-4 pb-8 flex items-center justify-between z-[100] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] rounded-t-[32px] pb-safe"
+          >
+            <div className="flex flex-col">
+              <span className="text-slate-900 font-black text-xl">₹{cartTotal.toLocaleString()}</span>
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{cartItemCount} item{cartItemCount > 1 ? 's' : ''} added</span>
+            </div>
+            <button 
+              onClick={() => onProceed(cart)}
+              className="px-10 py-3.5 bg-blue-600 text-white rounded-xl font-black text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95"
+            >
+              Proceed
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Service Info Modal */}
       <ServiceInfoModal 
         isOpen={isInfoModalOpen}
         onClose={() => setIsInfoModalOpen(false)}
         service={selectedServiceForInfo}
-        onAdd={onProceed}
+        onAdd={(extraItems, extraInventory) => selectedServiceForInfo && updateQuantity(selectedServiceForInfo.id, 1, extraItems, extraInventory)}
       />
     </div>
   );
