@@ -6,9 +6,10 @@ import { ICONS } from '../../constants';
 interface Props {
   onLogout: () => void;
   onBack: () => void;
+  onOpenLogoGen: () => void;
 }
 
-const ProfilePage: React.FC<Props> = ({ onLogout, onBack }) => {
+const ProfilePage: React.FC<Props> = ({ onLogout, onBack, onOpenLogoGen }) => {
   const user = auth.currentUser;
 
   if (!user) return null;
@@ -77,6 +78,21 @@ const ProfilePage: React.FC<Props> = ({ onLogout, onBack }) => {
                 <p className="text-sm font-bold text-emerald-600">Verified</p>
               </div>
             </div>
+
+            <button 
+              onClick={onOpenLogoGen}
+              className="w-full flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:bg-blue-100 transition-all group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">PWA Branding</p>
+                <p className="text-sm font-bold text-blue-900">Generate App Logo</p>
+              </div>
+            </button>
           </div>
 
           <div className="mt-12 pt-10 border-t border-slate-100">
