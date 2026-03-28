@@ -1,20 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyClcK8wBsxaUTcFHzbKl2_f5fi91px0Mx0",
-  authDomain: "jspackersandmovers-fa591.firebaseapp.com",
-  projectId: "jspackersandmovers-fa591",
-  storageBucket: "jspackersandmovers-fa591.firebasestorage.app",
-  messagingSenderId: "1049174322356",
-  appId: "1:1049174322356:web:34856819717111f661fbe1",
-  measurementId: "G-EQ35FZNP5C"
-};
+import firebaseConfig from "../firebase-applet-config.json";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const googleProvider = new GoogleAuthProvider();
 
 export enum OperationType {
   CREATE = 'create',
