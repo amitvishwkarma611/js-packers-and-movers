@@ -3,23 +3,6 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/logo.png',
-  '/icons/favicon-32x32.png',
-  '/icons/icon-72.png',
-  '/icons/icon-96.png',
-  '/icons/icon-128.png',
-  '/logo.png',
-  '/icons/icon-152.png',
-  '/icons/icon-192.png',
-  '/icons/icon-384.png',
-  '/icons/icon-512.png',
-  '/icons/icon-72-maskable.png',
-  '/icons/icon-96-maskable.png',
-  '/icons/icon-128-maskable.png',
-  '/icons/icon-144-maskable.png',
-  '/icons/icon-152-maskable.png',
-  '/icons/icon-192-maskable.png',
-  '/icons/icon-384-maskable.png',
-  '/icons/icon-512-maskable.png'
 ];
 
 self.addEventListener('install', event => {
