@@ -6,9 +6,11 @@ import { ICONS } from '../../constants';
 interface Props {
   onLogout: () => void;
   onBack: () => void;
+  onInstallApp: () => void;
+  canInstall: boolean;
 }
 
-const ProfilePage: React.FC<Props> = ({ onLogout, onBack }) => {
+const ProfilePage: React.FC<Props> = ({ onLogout, onBack, onInstallApp, canInstall }) => {
   const user = auth.currentUser;
 
   if (!user) return null;

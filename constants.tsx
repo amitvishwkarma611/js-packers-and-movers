@@ -154,7 +154,7 @@ export const ICONS = {
     </svg>
   ),
   Logo: (props: any) => (
-    <img src="/icon.png" alt="Logo" {...props} />
+    <img src="/logo.svg" alt="Logo" {...props} />
   ),
   Clock: (props: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>

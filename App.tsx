@@ -31,6 +31,25 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<{ [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }>({});
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
   
   const [confirmedBookings, setConfirmedBookings] = useState<ConfirmedBooking[]>([
     {
@@ -464,6 +483,21 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-blue-100 selection:text-blue-700 animate-fadeIn">
+      {deferredPrompt && (
+        <div className="bg-blue-600 text-white px-6 py-2 flex items-center justify-between text-sm font-bold animate-slideDown">
+          <div className="flex items-center gap-2">
+            <ICONS.Logo className="w-5 h-5" />
+            <span>Install Jaiswal Packers for a better experience</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={handleInstallApp} className="bg-white text-blue-600 px-4 py-1 rounded-lg text-xs font-black uppercase tracking-wider">Install</button>
+            <button onClick={() => setDeferredPrompt(null)} className="text-white/60 hover:text-white">
+              <ICONS.X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className={`bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 ${view === 'HOME' ? 'hidden lg:block' : ''}`}>
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
@@ -628,7 +662,16 @@ const App: React.FC = () => {
             {view === 'PRICING' && <PricingPage onStartBooking={() => setView('BOOKING_FLOW')} />}
             {view === 'ADMIN' && user.isAdmin && <AdminDashboard bookings={confirmedBookings} onUpdateStatus={handleUpdateBookingStatus} />}
             {view === 'MY_BOOKINGS' && <div className="max-w-6xl mx-auto w-full px-6 py-12"><MyBookings bookings={confirmedBookings} onBack={() => setView('HOME')} onUpdateBookingStatus={handleUpdateBookingStatus} /></div>}
-            {view === 'PROFILE' && <div className="max-w-6xl mx-auto w-full px-6 py-12"><ProfilePage onLogout={handleLogout} onBack={() => setView('HOME')} /></div>}
+            {view === 'PROFILE' && (
+              <div className="max-w-6xl mx-auto w-full px-6 py-12">
+                <ProfilePage 
+                  onLogout={handleLogout} 
+                  onBack={() => setView('HOME')} 
+                  onInstallApp={handleInstallApp}
+                  canInstall={!!deferredPrompt}
+                />
+              </div>
+            )}
             {view === 'BOOKING_FLOW' && (
               <div className="max-w-6xl mx-auto w-full px-6 py-12">
                 <div className="mb-12">
