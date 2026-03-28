@@ -1,0 +1,141 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: userId
+    // Fields:
+    //   - name: string (required, < 100 chars)
+    //   - email: string (required, valid email)
+    //   - mobileNumber: string (optional, < 20 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Collection: users/{userId}/addresses
+    // Document ID: auto-generated
+    // Fields:
+    //   - houseNumber: string (required, < 100 chars)
+    //   - landmark: string (optional, < 100 chars)
+    //   - city: string (required, < 50 chars)
+    //   - pincode: string (required, < 20 chars)
+    //   - saveAs: string (required, enum: ['Home', 'Office', 'Other'])
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // Collection: users/{userId}/bookings
+    // Document ID: auto-generated
+    // Fields:
+    //   - serviceName: string (required, < 100 chars)
+    //   - serviceCategory: string (required, < 50 chars)
+    //   - price: number (required, >= 0)
+    //   - bookingDate: timestamp (required)
+    //   - addressId: string (required, < 50 chars)
+    //   - status: string (required, enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'])
+    //   - paymentStatus: string (required, < 50 chars)
+    //   - createdAt: timestamp (required, immutable)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'admin@ajpackers.com';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidString(field, minLen, maxLen) {
+      return field is string && field.size() >= minLen && field.size() <= maxLen;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser() {
+      let data = request.resource.data;
+      return hasOnlyAllowedFields(['name', 'email', 'mobileNumber', 'createdAt']) &&
+             isValidString(data.name, 1, 100) &&
+             isValidEmail(data.email) &&
+             (!('mobileNumber' in data) || isValidString(data.mobileNumber, 0, 20)) &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidAddress() {
+      let data = request.resource.data;
+      return hasOnlyAllowedFields(['houseNumber', 'landmark', 'city', 'pincode', 'saveAs', 'createdAt']) &&
+             isValidString(data.houseNumber, 1, 100) &&
+             (!('landmark' in data) || isValidString(data.landmark, 0, 100)) &&
+             isValidString(data.city, 1, 50) &&
+             isValidString(data.pincode, 1, 20) &&
+             data.saveAs in ['Home', 'Office', 'Other'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidBooking() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['serviceName', 'serviceCategory', 'servicePrice', 'bookingDate', 'addressId', 'status', 'paymentStatus', 'createdAt', 'userUID', 'userName', 'userMobile', 'userEmail']) &&
+             isValidString(data.serviceName, 1, 1000) &&
+             isValidString(data.serviceCategory, 1, 50) &&
+             data.servicePrice is number && data.servicePrice >= 0 &&
+             isValidString(data.addressId, 1, 500) &&
+             data.status in ['Pending', 'Upcoming', 'Confirmed', 'Completed', 'Cancelled', 'Accepted', 'Rejected'] &&
+             isValidString(data.paymentStatus, 1, 50) &&
+             data.createdAt is timestamp &&
+             (data.userUID == request.auth.uid || isAdmin()) &&
+             data.userName is string &&
+             data.userMobile is string &&
+             data.userEmail is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userUID == request.auth.uid);
+      allow create: if isAuthenticated() && isValidBooking() && request.resource.data.userUID == request.auth.uid;
+      allow update: if (isAdmin() || (isAuthenticated() && resource.data.userUID == request.auth.uid)) && isValidBooking() && request.resource.data.createdAt == resource.data.createdAt && request.resource.data.userUID == resource.data.userUID;
+      allow delete: if isAdmin() || (isAuthenticated() && resource.data.userUID == request.auth.uid);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser();
+      allow update: if isOwner(userId) && isValidUser() && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner(userId);
+
+      match /addresses/{addressId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidAddress();
+        allow update: if isOwner(userId) && isValidAddress() && request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isOwner(userId);
+      }
+
+      match /bookings/{bookingId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidBooking();
+        allow update: if (isOwner(userId) || isAdmin()) && isValidBooking() && request.resource.data.createdAt == resource.data.createdAt && request.resource.data.userUID == resource.data.userUID;
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

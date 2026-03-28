@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "mobileNumber": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "createdAt"]
+    },
+    "Address": {
+      "title": "Address",
+      "description": "A user's saved address",
+      "type": "object",
+      "properties": {
+        "houseNumber": { "type": "string" },
+        "landmark": { "type": "string" },
+        "city": { "type": "string" },
+        "pincode": { "type": "string" },
+        "saveAs": { "type": "string", "enum": ["Home", "Office", "Other"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["houseNumber", "city", "pincode", "saveAs", "createdAt"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A service booking made by a user",
+      "type": "object",
+      "properties": {
+        "serviceName": { "type": "string" },
+        "serviceCategory": { "type": "string" },
+        "price": { "type": "number" },
+        "bookingDate": { "type": "string", "format": "date-time" },
+        "addressId": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Confirmed", "Completed", "Cancelled"] },
+        "paymentStatus": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["serviceName", "serviceCategory", "price", "bookingDate", "addressId", "status", "paymentStatus", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/users/{userId}/addresses/{addressId}": {
+      "schema": { "$ref": "#/entities/Address" },
+      "description": "User addresses"
+    },
+    "/users/{userId}/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "User bookings"
+    }
+  }
+}

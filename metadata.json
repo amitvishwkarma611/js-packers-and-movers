@@ -1,0 +1,7 @@
+{
+  "name": "Jaiswal Packers and Movers",
+  "description": "A comprehensive packers and movers platform inspired by Porter, featuring AI-assisted inventory estimation and real-time quotes.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
