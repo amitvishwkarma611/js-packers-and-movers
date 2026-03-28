@@ -111,11 +111,12 @@ const stories: StoryItem[] = [
 interface UrbanHomeProps {
   onStartBooking: () => void;
   onSelectMoversService: (serviceId: string) => void;
+  onSelectNaturals: () => void;
   onCartClick: () => void;
   cart: { [key: string]: any };
 }
 
-const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversService, onCartClick, cart }) => {
+const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversService, onSelectNaturals, onCartClick, cart }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isMoversSheetOpen, setIsMoversSheetOpen] = useState(false);
   const [isLocationScreenOpen, setIsLocationScreenOpen] = useState(false);
@@ -133,6 +134,8 @@ const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversSer
   const handleCategoryClick = (cat: Category) => {
     if (cat.id === '6') {
       setIsMoversSheetOpen(true);
+    } else if (cat.id === '1') {
+      onSelectNaturals();
     } else {
       setComingSoonCategory(cat.title);
       setShowComingSoon(true);

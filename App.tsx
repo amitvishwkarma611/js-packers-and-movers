@@ -542,6 +542,7 @@ const App: React.FC = () => {
               setView('BOOKING_FLOW');
             }
           }}
+          onSelectNaturals={() => setView('NATURALS')}
           onCartClick={() => setView('PAYMENT_SUMMARY')}
           cart={cart}
         />
@@ -581,17 +582,47 @@ const App: React.FC = () => {
         />
       )}
             {view === 'NATURALS' && (
-              <div className="max-w-6xl mx-auto px-6 py-12 text-center">
-                <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 text-emerald-600">
-                  <ICONS.Sparkles className="w-12 h-12" />
+              <div className="max-w-6xl mx-auto px-6 py-24 text-center animate-fadeIn">
+                <div className="w-32 h-32 bg-emerald-50 rounded-[40px] flex items-center justify-center mx-auto mb-8 text-emerald-600 shadow-inner">
+                  <ICONS.Sparkles className="w-16 h-16 animate-pulse" />
                 </div>
-                <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Naturals & Organic</h2>
-                <p className="text-slate-500 font-medium max-w-md mx-auto leading-relaxed">
-                  Discover our range of eco-friendly and natural cleaning solutions for a healthier home.
+                <div className="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+                  Coming Soon
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
+                  Naturals & Organic <br/>
+                  <span className="text-emerald-600">Cleaning Revolution</span>
+                </h2>
+                <p className="text-slate-500 font-medium max-w-lg mx-auto leading-relaxed text-lg mb-10">
+                  We're crafting a new range of eco-friendly, chemical-free cleaning solutions that are safe for your family and the planet.
                 </p>
-                <button onClick={() => setView('BOOKING_FLOW')} className="mt-8 px-10 py-4 bg-emerald-600 text-white rounded-2xl font-black shadow-xl shadow-emerald-100 hover:scale-105 transition-all">
-                  Explore Services
-                </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <button 
+                    onClick={() => setView('HOME')} 
+                    className="w-full sm:w-auto px-10 py-4 bg-slate-900 text-white rounded-2xl font-black shadow-xl hover:scale-105 transition-all active:scale-95"
+                  >
+                    Back to Home
+                  </button>
+                  <button 
+                    className="w-full sm:w-auto px-10 py-4 bg-white border-2 border-slate-100 text-slate-400 rounded-2xl font-black cursor-not-allowed"
+                    disabled
+                  >
+                    Notify Me
+                  </button>
+                </div>
+                
+                <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                  {[
+                    { title: '100% Organic', desc: 'Plant-based ingredients only' },
+                    { title: 'Pet Safe', desc: 'Non-toxic for your furry friends' },
+                    { title: 'Eco-Friendly', desc: 'Biodegradable packaging' }
+                  ].map((feature, i) => (
+                    <div key={i} className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                      <h4 className="font-black text-slate-900 mb-2">{feature.title}</h4>
+                      <p className="text-sm text-slate-500 font-medium">{feature.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             {view === 'PRICING' && <PricingPage onStartBooking={() => setView('BOOKING_FLOW')} />}
