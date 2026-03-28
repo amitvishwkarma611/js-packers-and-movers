@@ -29,9 +29,60 @@ const App: React.FC = () => {
   const [view, setView] = useState<'HOME' | 'BOOKING_FLOW' | 'MY_BOOKINGS' | 'PRICING' | 'ADMIN' | 'PROFILE' | 'NATURALS' | 'SERVICE_DETAILS' | 'PAYMENT_SUMMARY'>('HOME');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [cart, setCart] = useState<{ [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }>({});
+  const [isInitialCartLoaded, setIsInitialCartLoaded] = useState(false);
+  const cartUserIdRef = React.useRef<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  
+  // Fetch Cart from Firestore
+  useEffect(() => {
+    setIsInitialCartLoaded(false);
+    if (!auth.currentUser) {
+      cartUserIdRef.current = null;
+      setCart({});
+      setIsInitialCartLoaded(true);
+      return;
+    }
+    
+    const uid = auth.currentUser.uid;
+    const fetchCart = async () => {
+      try {
+        const cartDoc = await getDocFromServer(doc(db, 'carts', uid));
+        if (cartDoc.exists()) {
+          setCart(cartDoc.data().items || {});
+        } else {
+          setCart({});
+        }
+        cartUserIdRef.current = uid;
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      } finally {
+        setIsInitialCartLoaded(true);
+      }
+    };
+    
+    fetchCart();
+  }, [user]);
+
+  // Save Cart to Firestore
+  useEffect(() => {
+    if (!isInitialCartLoaded || !auth.currentUser) return;
+    if (cartUserIdRef.current !== auth.currentUser.uid) return;
+    
+    const saveCart = async () => {
+      try {
+        await setDoc(doc(db, 'carts', auth.currentUser.uid), { 
+          items: cart, 
+          updatedAt: serverTimestamp() 
+        }, { merge: true });
+      } catch (error) {
+        console.error("Error saving cart:", error);
+      }
+    };
+    
+    saveCart();
+  }, [cart, isInitialCartLoaded, user]);
   
   useEffect(() => {
     const handler = (e: any) => {
