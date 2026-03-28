@@ -47,7 +47,9 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuthenticated() && request.auth.token.email == 'admin@ajpackers.com';
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "sv4817055@gmail.com" && request.auth.token.email_verified == true));
     }
 
     function isOwner(userId) {
@@ -72,10 +74,11 @@ service cloud.firestore {
 
     function isValidUser() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['name', 'email', 'mobileNumber', 'createdAt']) &&
+      return hasOnlyAllowedFields(['name', 'email', 'mobileNumber', 'role', 'createdAt']) &&
              isValidString(data.name, 1, 100) &&
              isValidEmail(data.email) &&
              (!('mobileNumber' in data) || isValidString(data.mobileNumber, 0, 20)) &&
+             data.role in ['admin', 'user'] &&
              data.createdAt is timestamp;
     }
 
