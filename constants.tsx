@@ -154,7 +154,9 @@ export const ICONS = {
     </svg>
   ),
   Logo: (props: any) => (
-    <img src="/logo-v3.svg" alt="Logo" {...props} />
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.542-7.875-7.875-7.875H9.75M16.5 4.5v14.25m0 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.542-7.875-7.875-7.875H9.75M16.5 4.5h-2.25m1.5 0v2.25m-5.121 0h5.25m-5.25 4.5h3m4.5 0a9 9 0 0 1-18 0m18 0a9 9 0 0 0-18 0" />
+    </svg>
   ),
   Clock: (props: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>

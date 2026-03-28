@@ -48,16 +48,3 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 } else {
   document.addEventListener('DOMContentLoaded', init);
 }
-
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('Jaiswal Packers: SW registered with scope:', registration.scope);
-      })
-      .catch(error => {
-        console.error('Jaiswal Packers: SW registration failed:', error);
-      });
-  });
-}
