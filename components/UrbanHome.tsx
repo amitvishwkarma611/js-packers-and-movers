@@ -112,11 +112,9 @@ interface UrbanHomeProps {
   onStartBooking: () => void;
   onSelectMoversService: (serviceId: string) => void;
   onSelectNaturals: () => void;
-  onCartClick: () => void;
-  cart: { [key: string]: any };
 }
 
-const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversService, onSelectNaturals, onCartClick, cart }) => {
+const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversService, onSelectNaturals }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [isMoversSheetOpen, setIsMoversSheetOpen] = useState(false);
   const [isLocationScreenOpen, setIsLocationScreenOpen] = useState(false);
@@ -185,16 +183,7 @@ const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversSer
             </div>
             <span className="text-xs text-slate-400 font-medium truncate max-w-[200px]">Tap to change location</span>
           </div>
-          <div className="relative" onClick={onCartClick}>
-            <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
-              <ShoppingCart className="w-5 h-5" />
-            </div>
-            {Object.keys(cart || {}).length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                {Object.keys(cart).length}
-              </span>
-            )}
-          </div>
+          <div className="w-10" />
         </div>
 
         <div className="relative group">

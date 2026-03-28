@@ -42,23 +42,9 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["serviceName", "serviceCategory", "price", "bookingDate", "addressId", "status", "paymentStatus", "createdAt"]
-    },
-    "Cart": {
-      "title": "Cart",
-      "description": "A user's shopping cart",
-      "type": "object",
-      "properties": {
-        "items": { "type": "object" },
-        "updatedAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["items", "updatedAt"]
     }
   },
   "firestore": {
-    "/carts/{userId}": {
-      "schema": { "$ref": "#/entities/Cart" },
-      "description": "User shopping carts"
-    },
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/User" },
       "description": "User profiles"

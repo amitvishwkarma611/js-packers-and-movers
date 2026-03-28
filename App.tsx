@@ -26,63 +26,17 @@ const App: React.FC = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [authMode, setAuthMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
   const [currentStep, setCurrentStep] = useState<BookingStep>(BookingStep.LOCATION);
-  const [view, setView] = useState<'HOME' | 'BOOKING_FLOW' | 'MY_BOOKINGS' | 'PRICING' | 'ADMIN' | 'PROFILE' | 'NATURALS' | 'SERVICE_DETAILS' | 'PAYMENT_SUMMARY'>('HOME');
+  const [view, setView] = useState<'HOME' | 'BOOKING_FLOW' | 'MY_BOOKINGS' | 'PRICING' | 'ADMIN' | 'PROFILE' | 'NATURALS' | 'SERVICE_DETAILS'>('HOME');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [cart, setCart] = useState<{ [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }>({});
-  const [isInitialCartLoaded, setIsInitialCartLoaded] = useState(false);
-  const cartUserIdRef = React.useRef<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   // Fetch Cart from Firestore
-  useEffect(() => {
-    setIsInitialCartLoaded(false);
-    if (!auth.currentUser) {
-      cartUserIdRef.current = null;
-      setCart({});
-      setIsInitialCartLoaded(true);
-      return;
-    }
-    
-    const uid = auth.currentUser.uid;
-    const fetchCart = async () => {
-      try {
-        const cartDoc = await getDocFromServer(doc(db, 'carts', uid));
-        if (cartDoc.exists()) {
-          setCart(cartDoc.data().items || {});
-        } else {
-          setCart({});
-        }
-        cartUserIdRef.current = uid;
-      } catch (error) {
-        console.error("Error fetching cart:", error);
-      } finally {
-        setIsInitialCartLoaded(true);
-      }
-    };
-    
-    fetchCart();
-  }, [user]);
+  // Handle simulated loading on view changes
 
   // Save Cart to Firestore
-  useEffect(() => {
-    if (!isInitialCartLoaded || !auth.currentUser) return;
-    if (cartUserIdRef.current !== auth.currentUser.uid) return;
-    
-    const saveCart = async () => {
-      try {
-        await setDoc(doc(db, 'carts', auth.currentUser.uid), { 
-          items: cart, 
-          updatedAt: serverTimestamp() 
-        }, { merge: true });
-      } catch (error) {
-        console.error("Error saving cart:", error);
-      }
-    };
-    
-    saveCart();
-  }, [cart, isInitialCartLoaded, user]);
+  // Handle simulated loading on view changes
   
   useEffect(() => {
     const handler = (e: any) => {
@@ -290,31 +244,7 @@ const App: React.FC = () => {
     };
   }, [booking]);
 
-  const displayEstimate = useMemo(() => {
-    const allServices = [...localMovingServices, ...interCityMovingServices];
-    const selectedServices = Object.entries(cart).map(([id, item]: [string, { quantity: number; extraItems: number }]) => {
-      const service = allServices.find(s => s.id === id);
-      if (!service) return null;
-      return { ...service, quantity: item.quantity, extraItems: item.extraItems };
-    }).filter((s: any): s is any => s !== null);
-
-    if (selectedServices.length > 0) {
-      const finalPrice = selectedServices.reduce((total, s) => {
-        const priceStr = s.price || '0';
-        const basePrice = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
-        const extraPrice = s.extraItems * 500;
-        return total + ((basePrice + extraPrice) * s.quantity);
-      }, 0);
-      return {
-        basePrice: finalPrice,
-        packingCharges: 0,
-        laborCharges: 0,
-        transportation: 0,
-        total: finalPrice
-      };
-    }
-    return priceEstimate;
-  }, [cart, priceEstimate]);
+  const displayEstimate = priceEstimate;
 
   const updateQuantity = (id: string, delta: number) => {
     const updated = booking.inventory.map(item => {
@@ -372,14 +302,10 @@ const App: React.FC = () => {
         await initMetaMaskPayment();
       }
 
-      const isFromCart = Object.keys(cart).length > 0;
+      const isFromCart = false;
       
       let finalServiceName = booking.serviceType + ' Moving';
       
-      if (isFromCart) {
-        finalServiceName = selectedServices.map(s => s.title).join(', ');
-      }
-
       const bookingId = `b-${Date.now()}`;
       const newBooking = {
         id: bookingId,
@@ -405,7 +331,6 @@ const App: React.FC = () => {
       await setDoc(docRef, newBooking);
 
       setView('MY_BOOKINGS');
-      setCart({});
       setBooking({
         pickupAddress: '', dropAddress: '', moveDate: new Date().toISOString().split('T')[0],
         floorPickup: 0, floorDrop: 0, hasLiftPickup: true, hasLiftDrop: true,
@@ -436,19 +361,12 @@ const App: React.FC = () => {
   const prevStep = () => {
     if (currentStep === BookingStep.REVIEW) setCurrentStep(BookingStep.DATE_TIME);
     else if (currentStep === BookingStep.DATE_TIME) {
-      // If coming from cart, we can't go back to service selection steps
-      if (Object.keys(cart).length > 0) {
-        setView('PAYMENT_SUMMARY');
-      } else {
-        setCurrentStep(BookingStep.SERVICE_TYPE);
-      }
+      setCurrentStep(BookingStep.SERVICE_TYPE);
     }
     else if (currentStep === BookingStep.SERVICE_TYPE) {
-      if (Object.keys(cart).length > 0) return; // Point of no return for cart flow
       setCurrentStep(BookingStep.INVENTORY);
     }
     else if (currentStep === BookingStep.INVENTORY) {
-      if (Object.keys(cart).length > 0) return; // Point of no return for cart flow
       setCurrentStep(BookingStep.LOCATION);
     }
   };
@@ -471,18 +389,8 @@ const App: React.FC = () => {
   }, [currentStep, booking, isProcessingPayment]);
 
   const selectedServices = useMemo(() => {
-    const allServices = [...localMovingServices, ...interCityMovingServices];
-    return Object.entries(cart).map(([id, item]: [string, { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } }]) => {
-      const service = allServices.find(s => s.id === id);
-      if (!service) return null;
-      return { 
-        ...service, 
-        quantity: item.quantity, 
-        extraItems: item.extraItems,
-        extraInventory: item.extraInventory
-      };
-    }).filter((s: any): s is any => s !== null);
-  }, [cart]);
+    return [];
+  }, []);
 
   const handleLoginSuccess = (email: string) => {
     const isAdmin = email.toLowerCase() === 'admin@ajpackers.com';
@@ -628,41 +536,14 @@ const App: React.FC = () => {
             }
           }}
           onSelectNaturals={() => setView('NATURALS')}
-          onCartClick={() => setView('PAYMENT_SUMMARY')}
-          cart={cart}
         />
       )}
 
       {view === 'SERVICE_DETAILS' && (
         <ServiceDetailsPage 
           onBack={() => setView('HOME')}
-          onProceed={(newCart) => {
-            setCart(newCart);
-            setView('PAYMENT_SUMMARY');
-          }}
-          cart={cart}
-          setCart={setCart}
-          onCartClick={() => setView('PAYMENT_SUMMARY')}
-        />
-      )}
-
-      {view === 'PAYMENT_SUMMARY' && (
-        <PaymentSummaryPage 
-          cart={cart}
-          services={[...localMovingServices, ...interCityMovingServices]}
-          onBack={() => setView('SERVICE_DETAILS')}
-          onSelectAddress={(addressDetails) => {
-            console.log('Address confirmed:', addressDetails);
-            const pickup = addressDetails.pickup;
-            const drop = addressDetails.drop;
-            
-            setBooking({
-              ...booking,
-              pickupAddress: pickup ? `${pickup.houseNo}, ${pickup.landmark ? pickup.landmark + ', ' : ''}${pickup.fullAddress}` : booking.pickupAddress,
-              dropAddress: drop ? `${drop.houseNo}, ${drop.landmark ? drop.landmark + ', ' : ''}${drop.fullAddress}` : booking.dropAddress
-            });
+          onProceed={() => {
             setView('BOOKING_FLOW');
-            setCurrentStep(BookingStep.DATE_TIME);
           }}
         />
       )}
@@ -736,7 +617,7 @@ const App: React.FC = () => {
                     ].map((s, idx) => {
                       const stepIdx = Object.values(BookingStep).indexOf(s.step);
                       const currentIdx = Object.values(BookingStep).indexOf(currentStep);
-                      const isCartFlow = Object.keys(cart).length > 0;
+                      const isCartFlow = false;
                       const isPastPointOfNoReturn = isCartFlow && idx < 3;
                       const canNavigate = !isPastPointOfNoReturn && stepIdx < currentIdx;
 
@@ -824,20 +705,7 @@ const App: React.FC = () => {
           </svg>
           <span className="text-[10px] font-bold uppercase tracking-wider">Naturals</span>
         </button>
-        <button onClick={() => setView('PAYMENT_SUMMARY')} className={`flex flex-col items-center gap-1 transition-colors relative ${view === 'PAYMENT_SUMMARY' ? 'text-blue-600' : 'text-slate-400'}`}>
-          <div className="relative">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121 -2.3 2.1 -4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-            </svg>
-            {Object.keys(cart).length > 0 && (
-              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-blue-600 text-white text-[8px] font-bold rounded-full flex items-center justify-center border border-white">
-                {Object.keys(cart).length}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider">Cart</span>
-        </button>
-        <button onClick={() => setView('MY_BOOKINGS')} className={`flex flex-col items-center gap-1 transition-colors ${view === 'MY_BOOKINGS' ? 'text-blue-600' : 'text-slate-400'}`}>
+        <button onClick={() => setView('HOME')} className={`flex flex-col items-center gap-1 transition-colors ${view === 'HOME' ? 'text-blue-600' : 'text-slate-400'}`}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-0.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
           </svg>
