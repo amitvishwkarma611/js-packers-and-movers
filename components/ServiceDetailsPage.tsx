@@ -207,17 +207,11 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
       if (newQty === 0) {
         delete newCart[serviceId];
       } else {
-        const updatedItem: any = { 
+        newCart[serviceId] = { 
           quantity: newQty, 
-          extraItems: delta > 0 ? extraItems : current.extraItems
+          extraItems: delta > 0 ? extraItems : current.extraItems,
+          extraInventory: delta > 0 ? extraInventory : current.extraInventory
         };
-        
-        const newExtraInventory = delta > 0 ? extraInventory : current.extraInventory;
-        if (newExtraInventory !== undefined) {
-          updatedItem.extraInventory = newExtraInventory;
-        }
-        
-        newCart[serviceId] = updatedItem;
       }
       return newCart;
     });

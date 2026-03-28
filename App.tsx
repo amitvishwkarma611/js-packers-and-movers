@@ -72,11 +72,8 @@ const App: React.FC = () => {
     
     const saveCart = async () => {
       try {
-        // Clean up undefined values from cart before saving to Firestore
-        const cleanCart = JSON.parse(JSON.stringify(cart));
-        
         await setDoc(doc(db, 'carts', auth.currentUser.uid), { 
-          items: cleanCart, 
+          items: cart, 
           updatedAt: serverTimestamp() 
         }, { merge: true });
       } catch (error) {
