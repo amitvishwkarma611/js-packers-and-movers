@@ -2,17 +2,15 @@
   "short_name": "Jaiswal Packers",
   "name": "Jaiswal Packers and Movers",
   "icons": [
-    
     {
       "src": "/logo.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
-    },
-  
-  {"start_url": "/",
+    }
+  ],
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#003366",
   "background_color": "#ffffff"
-
 }
