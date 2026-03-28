@@ -50,7 +50,15 @@ const App: React.FC = () => {
       try {
         const cartDoc = await getDocFromServer(doc(db, 'carts', uid));
         if (cartDoc.exists()) {
-          setCart(cartDoc.data().items || {});
+          const items = cartDoc.data().items || {};
+          const sanitizedItems = Object.keys(items).reduce((acc, key) => {
+            acc[key] = {
+              ...items[key],
+              extraInventory: items[key].extraInventory || {}
+            };
+            return acc;
+          }, {} as any);
+          setCart(sanitizedItems);
         } else {
           setCart({});
         }
@@ -71,9 +79,20 @@ const App: React.FC = () => {
     if (cartUserIdRef.current !== auth.currentUser.uid) return;
     
     const saveCart = async () => {
+      // Sanitize cart to ensure no undefined values
+      const sanitizedCart = Object.keys(cart).reduce((acc, key) => {
+        const item = cart[key];
+        acc[key] = {
+          quantity: item.quantity || 0,
+          extraItems: item.extraItems || 0,
+          extraInventory: item.extraInventory || {}
+        };
+        return acc;
+      }, {} as any);
+
       try {
         await setDoc(doc(db, 'carts', auth.currentUser.uid), { 
-          items: cart, 
+          items: sanitizedCart, 
           updatedAt: serverTimestamp() 
         }, { merge: true });
       } catch (error) {

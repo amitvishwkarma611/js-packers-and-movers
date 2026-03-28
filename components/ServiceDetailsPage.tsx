@@ -200,7 +200,7 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
 
   const updateQuantity = (serviceId: string, delta: number, extraItems: number = 0, extraInventory?: { [key: string]: number }) => {
     setCart(prev => {
-      const current = prev[serviceId] || { quantity: 0, extraItems: 0 };
+      const current = prev[serviceId] || { quantity: 0, extraItems: 0, extraInventory: {} };
       const newQty = Math.max(0, current.quantity + delta);
       
       const newCart = { ...prev };
@@ -210,7 +210,7 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
         newCart[serviceId] = { 
           quantity: newQty, 
           extraItems: delta > 0 ? extraItems : current.extraItems,
-          extraInventory: delta > 0 ? extraInventory : current.extraInventory
+          extraInventory: delta > 0 ? (extraInventory || {}) : (current.extraInventory || {})
         };
       }
       return newCart;
@@ -235,12 +235,12 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
           <ArrowLeft className="w-6 h-6 text-slate-900" />
         </button>
         <h1 className="flex-1 text-center font-bold text-slate-900">Packers Movers Local</h1>
-        <div className="relative" onClick={onCartClick}>
-          <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer">
+        <div className="relative">
+          <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 opacity-50">
             <ShoppingCart className="w-5 h-5" />
           </div>
           {cartItemCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-slate-300 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
               {cartItemCount}
             </span>
           )}
