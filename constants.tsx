@@ -1,9 +1,9 @@
 import React from 'react';
 
 export const COLORS = {
-  primary: '#2563eb', // Blue-600
-  secondary: '#1e40af', // Blue-800
-  accent: '#f59e0b', // Amber-500
+  primary: '#1e40af', // Blue-700
+  secondary: '#003366', // Darker blue from logo
+  accent: '#f97316', // Orange from logo
 };
 
 export interface CatalogItem {
@@ -154,7 +154,7 @@ export const ICONS = {
     </svg>
   ),
   Logo: (props: any) => (
-    <img src="/logo.svg" alt="Logo" {...props} />
+    <img src="/logo.svg?v=2" alt="Logo" {...props} />
   ),
   Clock: (props: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
