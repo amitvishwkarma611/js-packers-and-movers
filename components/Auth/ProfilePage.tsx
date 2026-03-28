@@ -6,9 +6,11 @@ import { ICONS } from '../../constants';
 interface Props {
   onLogout: () => void;
   onBack: () => void;
+  onInstallApp: () => void;
+  canInstall: boolean;
 }
 
-const ProfilePage: React.FC<Props> = ({ onLogout, onBack }) => {
+const ProfilePage: React.FC<Props> = ({ onLogout, onBack, onInstallApp, canInstall }) => {
   const user = auth.currentUser;
 
   if (!user) return null;
@@ -79,7 +81,18 @@ const ProfilePage: React.FC<Props> = ({ onLogout, onBack }) => {
             </div>
           </div>
 
-          <div className="mt-12 pt-10 border-t border-slate-100">
+          <div className="mt-12 pt-10 border-t border-slate-100 space-y-4">
+            {canInstall && (
+              <button 
+                onClick={onInstallApp}
+                className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-blue-50 text-blue-600 rounded-2xl font-black hover:bg-blue-100 transition-all active:scale-95"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Install App
+              </button>
+            )}
             <button 
               onClick={onLogout}
               className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-red-50 text-red-600 rounded-2xl font-black hover:bg-red-100 transition-all active:scale-95"
