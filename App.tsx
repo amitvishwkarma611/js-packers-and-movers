@@ -18,7 +18,6 @@ import PricingPage from './components/PricingPage.tsx';
 import AdminDashboard from './components/AdminDashboard.tsx';
 import ProfilePage from './components/Auth/ProfilePage.tsx';
 import ReviewStep from './components/ReviewStep.tsx';
-import LogoGenerator from './components/LogoGenerator.tsx';
 import { HeroSkeleton, PricingSkeleton, BookingListSkeleton, AdminStatsSkeleton, TableSkeleton } from './components/SkeletonLoader.tsx';
 
 const App: React.FC = () => {
@@ -27,7 +26,7 @@ const App: React.FC = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [authMode, setAuthMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
   const [currentStep, setCurrentStep] = useState<BookingStep>(BookingStep.LOCATION);
-  const [view, setView] = useState<'HOME' | 'BOOKING_FLOW' | 'MY_BOOKINGS' | 'PRICING' | 'ADMIN' | 'PROFILE' | 'NATURALS' | 'SERVICE_DETAILS' | 'PAYMENT_SUMMARY' | 'LOGO_GEN'>('HOME');
+  const [view, setView] = useState<'HOME' | 'BOOKING_FLOW' | 'MY_BOOKINGS' | 'PRICING' | 'ADMIN' | 'PROFILE' | 'NATURALS' | 'SERVICE_DETAILS' | 'PAYMENT_SUMMARY'>('HOME');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [cart, setCart] = useState<{ [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } }>({});
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -627,10 +626,9 @@ const App: React.FC = () => {
               </div>
             )}
             {view === 'PRICING' && <PricingPage onStartBooking={() => setView('BOOKING_FLOW')} />}
-            {view === 'LOGO_GEN' && <LogoGenerator onBack={() => setView('PROFILE')} />}
             {view === 'ADMIN' && user.isAdmin && <AdminDashboard bookings={confirmedBookings} onUpdateStatus={handleUpdateBookingStatus} />}
             {view === 'MY_BOOKINGS' && <div className="max-w-6xl mx-auto w-full px-6 py-12"><MyBookings bookings={confirmedBookings} onBack={() => setView('HOME')} onUpdateBookingStatus={handleUpdateBookingStatus} /></div>}
-            {view === 'PROFILE' && <div className="max-w-6xl mx-auto w-full px-6 py-12"><ProfilePage onLogout={handleLogout} onBack={() => setView('HOME')} onOpenLogoGen={() => setView('LOGO_GEN')} /></div>}
+            {view === 'PROFILE' && <div className="max-w-6xl mx-auto w-full px-6 py-12"><ProfilePage onLogout={handleLogout} onBack={() => setView('HOME')} /></div>}
             {view === 'BOOKING_FLOW' && (
               <div className="max-w-6xl mx-auto w-full px-6 py-12">
                 <div className="mb-12">
