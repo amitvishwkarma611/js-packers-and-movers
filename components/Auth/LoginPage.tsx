@@ -25,7 +25,11 @@ const LoginPage: React.FC<Props> = ({ onClose, onSwitchToSignup, onLoginSuccess 
       }
     } catch (err: any) {
       console.error("Google login error:", err);
-      setError(err.message || "Failed to log in with Google.");
+      if (err.code === 'auth/unauthorized-domain') {
+        setError("This domain is not authorized for Google login. Please add the current domain to your Firebase Console's Authorized Domains list.");
+      } else {
+        setError(err.message || "Failed to log in with Google.");
+      }
     } finally {
       setLoading(false);
     }
