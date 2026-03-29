@@ -21,6 +21,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import MoversBottomSheet from './MoversBottomSheet';
 import LocationSelectionScreen from './LocationSelectionScreen';
+import ServiceAreaMap from './ServiceAreaMap';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -386,6 +387,9 @@ const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversSer
 
       {/* Renovation & Fabrications */}
       <HorizontalScrollSection title="Renovation & Fabrications" items={renovationServices} />
+
+      {/* Service Area Map */}
+      <ServiceAreaMap />
 
       {/* Stories Section */}
       <section className="py-6">
