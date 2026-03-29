@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Star, CheckCircle2, Truck, Info, Search, Package, Plus, Minus, ChevronRight } from 'lucide-react';
+import { X, Star, CheckCircle2, Info, Search, Package, Plus, Minus, ChevronRight } from 'lucide-react';
 import { COMMON_ITEMS } from '../constants.tsx';
 
 interface ServiceInfoModalProps {
@@ -13,7 +13,6 @@ interface ServiceInfoModalProps {
     image: string;
     price: string;
     description?: string;
-    truckSize?: string;
     includedServices?: string[];
     includedItems?: string[];
   } | null;
@@ -139,18 +138,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
               {/* Details Grid */}
               <div className="px-6 space-y-8 pb-12">
                 {/* Truck Size */}
-                {service.truckSize && (
-                  <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                      <Truck className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-slate-900 mb-1">Truck Size</h4>
-                      <p className="text-slate-500 text-sm font-medium">{service.truckSize}</p>
-                    </div>
-                  </div>
-                )}
-
+              
                 {/* Included Services */}
                 {service.includedServices && service.includedServices.length > 0 && (
                   <div className="space-y-4">

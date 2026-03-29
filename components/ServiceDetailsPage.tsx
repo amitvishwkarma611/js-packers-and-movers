@@ -11,7 +11,6 @@ export interface ServiceItem {
   price: string;
   description: string;
   image: string;
-  truckSize?: string;
   includedServices?: string[];
   includedItems?: string[];
 }
@@ -25,7 +24,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹3,999',
     description: 'Ideal for small apartments or single-room shifting within the same city.',
     image: 'https://images.unsplash.com/photo-1536376074432-a228d0677e8d?auto=format&fit=crop&q=80&w=200',
-    truckSize: 'Tata Ace or equivalent (Small truck)',
     includedServices: ['Packing, loading, and unloading', 'Transportation within the same city', 'Disassembly/reassembly of basic furniture'],
     includedItems: ['1 Single Bed', '1 Mattress', '1 Wardrobe', '1 Refrigerator (Small)', '1 Washing Machine', '4 to 6 Boxes of personal belongings']
   },
@@ -37,7 +35,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹4,999',
     description: 'Our 1 BHK Local Moving Service offers reliable packing and transport within the same city for smaller households.',
     image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=200',
-    truckSize: 'Tata Ace or equivalent (Small truck)',
     includedServices: ['Packing, loading, and unloading', 'Transportation within the same city', 'Disassembly/reassembly of basic furniture'],
     includedItems: ['1 Double Bed', '1 Mattress', '1 Wardrobe', '1 Refrigerator', '1 Washing Machine', '1 Gas Stove', '1 Cylinder', 'Sofa Set (3 seaters)', '6 to 10 Boxes of personal belongings', 'Upto 5 Miscellaneous items']
   },
@@ -49,7 +46,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹6,999',
     description: 'Our 2 BHK Local Moving Service provides comprehensive packing, transport, and unpacking within the same city.',
     image: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&q=80&w=200',
-    truckSize: 'Mahindra Bolero Pickup or equivalent',
     includedServices: ['Professional packing, loading, and unloading', 'Transportation within the same city', 'Disassembly/reassembly of all furniture'],
     includedItems: ['2 Double Beds', '2 Mattresses', '2 Wardrobes', '1 Refrigerator (Large)', '1 Washing Machine', '1 Dining Table (4 seater)', '1 TV Unit', 'Sofa Set (3+1+1)', '10 to 15 Boxes of personal belongings']
   },
@@ -61,7 +57,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹8,999',
     description: 'Our 3 BHK Local Moving Service offers full packing, transport, and unpacking solutions for larger homes within the city.',
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=200',
-    truckSize: '14ft Truck (Eicher or equivalent)',
     includedServices: ['Premium packing, loading, and unloading', 'Transportation within the same city', 'Disassembly/reassembly of all furniture', 'Unpacking and basic setting'],
     includedItems: ['3 Double Beds', '3 Mattresses', '3 Wardrobes', '1 Refrigerator (Double Door)', '1 Washing Machine', '1 Dining Table (6 seater)', '1 TV Unit', 'Sofa Set (5 seater)', '15 to 25 Boxes of personal belongings']
   },
@@ -73,7 +68,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹11,999',
     description: 'Best for large homes with professional packing and transportation.',
     image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&q=80&w=200',
-    truckSize: '17ft Truck (Eicher or equivalent)',
     includedServices: ['Premium packing, loading, and unloading', 'Transportation within the same city', 'Disassembly/reassembly of all furniture', 'Unpacking and full setting'],
     includedItems: ['4 Double Beds', '4 Mattresses', '4 Wardrobes', '1 Refrigerator (Double Door)', '2 Washing Machines', '1 Dining Table (8 seater)', '2 TV Units', 'Sofa Set (7 seater)', '25 to 40 Boxes of personal belongings']
   },
@@ -85,7 +79,6 @@ export const localMovingServices: ServiceItem[] = [
     price: '₹15,999',
     description: 'Complete relocation service for villas and duplex houses.',
     image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200',
-    truckSize: '20ft Container or 2x 14ft Trucks',
     includedServices: ['White-glove packing, loading, and unloading', 'Transportation within the same city', 'Expert disassembly/reassembly of all furniture', 'Unpacking and full home setting', 'Dedicated move manager'],
     includedItems: ['5+ Double Beds', '5+ Mattresses', '5+ Wardrobes', 'All Kitchen Appliances', 'All Living Room Furniture', 'Outdoor/Garden Furniture', '40+ Boxes of personal belongings']
   }
@@ -100,7 +93,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹15,300',
     description: 'Our 1 BHK Inter-City Moving Service ensures a hassle-free move with packing, transport, and handling.',
     image: 'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?auto=format&fit=crop&q=80&w=200',
-    truckSize: '14ft Shared or Dedicated Truck',
     includedServices: ['Multi-layer packing for long distance', 'Loading and unloading', 'Inter-city transportation', 'Basic furniture disassembly'],
     includedItems: ['1 Double Bed', '1 Mattress', '1 Wardrobe', '1 Refrigerator', '1 Washing Machine', '10 to 12 Boxes of personal belongings']
   },
@@ -112,7 +104,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹21,300',
     description: 'Our 2 BHK Inter-City Moving Service offers professional packing, transport, and handling.',
     image: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&q=80&w=200',
-    truckSize: '17ft Dedicated Truck',
     includedServices: ['Professional multi-layer packing', 'Loading and unloading', 'Inter-city transportation', 'Full furniture disassembly/reassembly'],
     includedItems: ['2 Double Beds', '2 Mattresses', '2 Wardrobes', '1 Refrigerator', '1 Washing Machine', '1 TV Unit', 'Sofa Set (3+1+1)', '15 to 20 Boxes of personal belongings']
   },
@@ -136,7 +127,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹42,500',
     description: 'Our 4 BHK Inter-City Moving Service offers comprehensive packing and transport for large families relocating.',
     image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&q=80&w=200',
-    truckSize: '24ft Dedicated Container',
     includedServices: ['Premium multi-layer packing', 'Loading and unloading', 'Inter-city transportation', 'Full furniture disassembly/reassembly', 'Unpacking and setting services'],
     includedItems: ['4 Double Beds', '4 Mattresses', '4 Wardrobes', 'All Major Appliances', 'All Living Room Furniture', '35 to 50 Boxes of personal belongings']
   },
@@ -148,7 +138,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹2,999',
     description: 'Safe bike relocation with secure packaging and door-to-door delivery.',
     image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=200',
-    truckSize: 'Shared Bike Carrier or Small Truck',
     includedServices: ['Specialized bike packing', 'Loading and unloading', 'Inter-city transportation', 'Insurance assistance'],
     includedItems: ['1 Two-Wheeler (Bike/Scooter)', 'Helmet', 'Basic Accessories']
   },
@@ -160,7 +149,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹8,999',
     description: 'Professional door-to-door vehicle transport service using open or closed carriers.',
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=200',
-    truckSize: 'Open/Closed Car Carrier',
     includedServices: ['Pre-transport inspection', 'Secure loading on carrier', 'Inter-city transportation', 'Door-step delivery'],
     includedItems: ['1 Four-Wheeler (Car/SUV)']
   },
@@ -172,7 +160,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹12,999',
     description: 'Professional office and workspace shifting service with minimal downtime.',
     image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=200',
-    truckSize: '17ft or 19ft Dedicated Truck',
     includedServices: ['IT equipment specialized packing', 'Furniture disassembly/reassembly', 'Loading and unloading', 'Workspace setting'],
     includedItems: ['5-10 Workstations', 'Office Chairs', 'Storage Cabinets', 'IT Assets (Monitors, CPUs)', 'Conference Table']
   }
