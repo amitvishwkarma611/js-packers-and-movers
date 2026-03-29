@@ -242,10 +242,6 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
         <div className="space-y-6">
           {sortedBookings.map((booking) => (
             <div key={booking.id} className={`bg-white rounded-[32px] border border-slate-100 p-8 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group overflow-hidden relative ${booking.status === 'Cancelled' ? 'opacity-60 bg-slate-50/50' : ''}`}>
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                <ICONS.Truck className="w-32 h-32" />
-              </div>
-              
               <div className="flex flex-col md:flex-row gap-8 relative z-10">
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">

@@ -114,9 +114,6 @@ const PricingPage: React.FC<Props> = ({ onStartBooking }) => {
           </div>
           
           <div className="lg:w-1/3 bg-white rounded-[40px] p-10 border border-slate-200 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-              <ICONS.Sparkles className="w-24 h-24" />
-            </div>
             <h4 className="text-xl font-black text-slate-900 mb-6">Shifting Insurance</h4>
             <p className="text-slate-500 text-sm font-medium mb-8 leading-relaxed">
               Protect your valuables for just 3% of declared value. Covers breakage, transit damage, and handling mishaps.

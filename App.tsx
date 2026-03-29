@@ -564,10 +564,7 @@ const App: React.FC = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-          <ICONS.Truck className="absolute -top-20 -left-20 w-96 h-96 rotate-12" />
-          <ICONS.Package className="absolute bottom-10 right-10 w-64 h-64 -rotate-12" />
-        </div>
+        {/* Removed watermark */}
         
         {authMode === 'LOGIN' ? (
           <LoginPage onClose={() => {}} onSwitchToSignup={() => setAuthMode('SIGNUP')} onLoginSuccess={handleLoginSuccess} />
