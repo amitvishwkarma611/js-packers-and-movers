@@ -311,29 +311,41 @@ const App: React.FC = () => {
 
   const displayEstimate = useMemo(() => {
     const allServices = [...localMovingServices, ...interCityMovingServices];
-    const selectedServices = Object.entries(cart).map(([id, item]: [string, { quantity: number; extraItems: number }]) => {
+    const selectedServices = Object.entries(cart).map(([id, item]: [string, { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } }]) => {
       const service = allServices.find(s => s.id === id);
       if (!service) return null;
-      return { ...service, quantity: item.quantity, extraItems: item.extraItems };
+      return { ...service, quantity: item.quantity, extraItems: item.extraItems, extraInventory: item.extraInventory };
     }).filter((s: any): s is any => s !== null);
 
     if (selectedServices.length > 0) {
-      const finalPrice = selectedServices.reduce((total, s) => {
+      let totalBase = 0;
+      let totalPacking = 0;
+      let totalLabor = 0;
+
+      selectedServices.forEach(s => {
         const priceStr = s.price || '0';
         const basePrice = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
-        const extraPrice = Object.entries(s.extraInventory || {}).reduce((total, [name, qty]) => {
+        totalBase += (basePrice * s.quantity);
+
+        Object.entries(s.extraInventory || {}).forEach(([name, qty]) => {
           const item = COMMON_ITEMS.find(i => i.name === name);
           const price = (item?.category.startsWith('Packing')) ? 50 : 500;
-          return total + (price * (qty as number));
-        }, 0);
-        return total + ((basePrice * s.quantity) + (extraPrice * s.quantity));
-      }, 0);
+          if (item?.category.startsWith('Packing')) {
+            totalPacking += (price * (qty as number) * s.quantity);
+          } else {
+            totalLabor += (price * (qty as number) * s.quantity);
+          }
+        });
+      });
+
+      const total = totalBase + totalPacking + totalLabor;
+
       return {
-        basePrice: finalPrice,
-        packingCharges: 0,
-        laborCharges: 0,
+        basePrice: totalBase,
+        packingCharges: totalPacking,
+        laborCharges: totalLabor,
         transportation: 0,
-        total: finalPrice
+        total: total
       };
     }
     return priceEstimate;

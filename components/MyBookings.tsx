@@ -55,6 +55,16 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     doc.text(`Booking Date: ${new Date(createdAt).toLocaleDateString()}`, 15, 67);
     doc.text(`Status: ${booking.status.toUpperCase()}`, 15, 72);
 
+    // Customer Details
+    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CUSTOMER DETAILS', 110, 62);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Name: ${booking.userName || 'N/A'}`, 110, 67);
+    doc.text(`Mobile: ${booking.userMobile || details.userMobile || 'N/A'}`, 110, 72);
+    doc.text(`Email: ${booking.userEmail || 'N/A'}`, 110, 77);
+
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
@@ -83,20 +93,54 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     doc.setFont('helvetica', 'bold');
     doc.text(`Service Level: ${details.serviceType}`, 15, 120);
     doc.text(`Scheduled For: ${details.moveDate}`, 110, 120);
+    doc.text(`Time Slot: ${details.moveSlot || 'Morning (7 AM - 10 AM)'}`, 110, 125);
+
+    // Selected Packages Section
+    let currentY = 135;
+    if (details.selectedServices && details.selectedServices.length > 0) {
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.setFontSize(12);
+      doc.text('SELECTED PACKAGES', 15, currentY);
+      currentY += 5;
+      
+      autoTable(doc, {
+        startY: currentY,
+        head: [['Package Title', 'Category', 'Quantity']],
+        body: details.selectedServices.map(s => [s.title, s.category || 'Moving Service', s.quantity.toString()]),
+        headStyles: { fillColor: [147, 51, 234], textColor: 255, fontStyle: 'bold' }, // Purple theme for packages
+        margin: { left: 15, right: 15 }
+      });
+      currentY = (doc as any).lastAutoTable.finalY + 10;
+    }
 
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setFontSize(12);
-    doc.text('INVENTORY LIST', 15, 135);
+    doc.text('INVENTORY LIST', 15, currentY);
 
-    autoTable(doc, {
-      startY: 140,
-      head: [['Item Name', 'Category', 'Weight Class', 'Qty']],
-      body: details.inventory.map(item => [
+    const inventoryBody = [
+      ...details.inventory.map(item => [
         item.name,
         item.category,
         item.weightClass,
         item.quantity.toString()
       ]),
+      ...(details.selectedServices || []).flatMap((s: any) => 
+        Object.entries(s.extraInventory || {}).map(([name, qty]) => {
+          const item = COMMON_ITEMS.find(i => i.name === name);
+          return [
+            `${name} (Extra)`,
+            item?.category || 'Extra Item',
+            item?.weightClass || 'N/A',
+            qty.toString()
+          ];
+        })
+      )
+    ];
+
+    autoTable(doc, {
+      startY: currentY + 5,
+      head: [['Item Name', 'Category', 'Weight Class', 'Qty']],
+      body: inventoryBody,
       headStyles: { fillColor: primaryColor, textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       margin: { left: 15, right: 15 }
@@ -108,34 +152,34 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     doc.rect(120, finalY, 75, 55, 'F');
     
     const summaryX = 125;
-    let currentY = finalY + 10;
+    let breakdownY = finalY + 10;
     
     doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
     doc.setFontSize(9);
-    doc.text('Base Shifting Price:', summaryX, currentY);
-    doc.text(`INR ${estimate.basePrice.toLocaleString()}`, 190, currentY, { align: 'right' });
+    doc.text('Base Shifting Price:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.basePrice.toLocaleString()}`, 190, breakdownY, { align: 'right' });
     
-    currentY += 7;
-    doc.text('Packing Charges:', summaryX, currentY);
-    doc.text(`INR ${estimate.packingCharges.toLocaleString()}`, 190, currentY, { align: 'right' });
+    breakdownY += 7;
+    doc.text('Packing Charges:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.packingCharges.toLocaleString()}`, 190, breakdownY, { align: 'right' });
     
-    currentY += 7;
-    doc.text('Labor & Handling:', summaryX, currentY);
-    doc.text(`INR ${estimate.laborCharges.toLocaleString()}`, 190, currentY, { align: 'right' });
+    breakdownY += 7;
+    doc.text('Labor & Handling:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.laborCharges.toLocaleString()}`, 190, breakdownY, { align: 'right' });
     
-    currentY += 7;
-    doc.text('Transportation Fare:', summaryX, currentY);
-    doc.text(`INR ${estimate.transportation.toLocaleString()}`, 190, currentY, { align: 'right' });
+    breakdownY += 7;
+    doc.text('Transportation Fare:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.transportation.toLocaleString()}`, 190, breakdownY, { align: 'right' });
 
-    currentY += 10;
+    breakdownY += 10;
     doc.setDrawColor(226, 232, 240);
-    doc.line(summaryX, currentY - 5, 190, currentY - 5);
+    doc.line(summaryX, breakdownY - 5, 190, breakdownY - 5);
     
     doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text('TOTAL PAID:', summaryX, currentY);
-    doc.text(`INR ${estimate.total.toLocaleString()}`, 190, currentY, { align: 'right' });
+    doc.text('TOTAL AMOUNT:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.total.toLocaleString()}`, 190, breakdownY, { align: 'right' });
 
     const pageHeight = doc.internal.pageSize.height;
     doc.setFontSize(8);
