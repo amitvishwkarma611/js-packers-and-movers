@@ -5,13 +5,14 @@ import { ICONS } from '../constants';
 
 interface Props {
   bookings: ConfirmedBooking[];
-  onUpdateStatus: (id: string, newStatus: 'Pending' | 'Upcoming' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Accepted' | 'Rejected') => void;
+  onUpdateStatus: (id: string, newStatus: ConfirmedBooking['status']) => void;
 }
 
 const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
-  const [filter, setFilter] = useState<'All' | 'Pending' | 'Accepted' | 'Rejected' | 'Upcoming' | 'Confirmed' | 'Completed' | 'Cancelled'>('All');
+  const [filter, setFilter] = useState<ConfirmedBooking['status'] | 'All'>('All');
   const [selectedBooking, setSelectedBooking] = useState<ConfirmedBooking | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: 'date' | 'price' | 'client'; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
 
   const stats = {
     total: bookings.length,
@@ -27,7 +28,29 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                           b.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           b.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
+  }).sort((a, b) => {
+    if (sortConfig.key === 'date') {
+      const dateA = a.createdAt?.seconds || 0;
+      const dateB = b.createdAt?.seconds || 0;
+      return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
+    }
+    if (sortConfig.key === 'price') {
+      return sortConfig.direction === 'asc' ? a.estimate.total - b.estimate.total : b.estimate.total - a.estimate.total;
+    }
+    if (sortConfig.key === 'client') {
+      const nameA = a.userName || '';
+      const nameB = b.userName || '';
+      return sortConfig.direction === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+    }
+    return 0;
   });
+
+  const handleSort = (key: 'date' | 'price' | 'client') => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
+    }));
+  };
 
   // Helper for static color mapping to ensure Tailwind JIT compiles them correctly
   const getStatStyles = (color: string) => {
@@ -104,12 +127,20 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Booking ID</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Client Details</th>
+                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-blue-600 transition-colors" onClick={() => handleSort('date')}>
+                  Booking ID {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-blue-600 transition-colors" onClick={() => handleSort('client')}>
+                  Client Details {sortConfig.key === 'client' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
                 <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Route</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Schedule</th>
+                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-blue-600 transition-colors" onClick={() => handleSort('date')}>
+                  Schedule {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
                 <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
+                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer hover:text-blue-600 transition-colors" onClick={() => handleSort('price')}>
+                  Actions/Price {sortConfig.key === 'price' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
