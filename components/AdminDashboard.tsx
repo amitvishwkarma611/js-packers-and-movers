@@ -212,10 +212,14 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                           </button>
                         </>
                       )}
-                      {b.status === 'Accepted' && (
+                      {(b.status === 'Accepted' || b.status === 'Completed') && (
                         <>
                           <a 
-                            href={b.userMobile ? `https://wa.me/${b.userMobile.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`)}` : '#'} 
+                            href={b.userMobile ? `https://wa.me/${b.userMobile.replace(/\D/g, '')}?text=${encodeURIComponent(
+                              b.status === 'Accepted' 
+                                ? `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`
+                                : `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been successfully completed! We hope you had a great experience with us. Thank you for choosing us!`
+                            )}` : '#'} 
                             target={b.userMobile ? "_blank" : undefined}
                             rel="noopener noreferrer"
                             onClick={(e) => {
@@ -229,13 +233,15 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                           >
                             <ICONS.WhatsApp className="w-4 h-4" />
                           </a>
-                          <button 
-                            onClick={() => onUpdateStatus(b.id, 'Completed')}
-                            className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all"
-                            title="Mark Completed"
-                          >
-                            <ICONS.Sparkles className="w-4 h-4" />
-                          </button>
+                          {b.status === 'Accepted' && (
+                            <button 
+                              onClick={() => onUpdateStatus(b.id, 'Completed')}
+                              className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all"
+                              title="Mark Completed"
+                            >
+                              <ICONS.Sparkles className="w-4 h-4" />
+                            </button>
+                          )}
                         </>
                       )}
                     </div>
