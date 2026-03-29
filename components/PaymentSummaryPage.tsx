@@ -4,6 +4,7 @@ import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { ServiceItem } from './ServiceDetailsPage';
 import AddressBottomSheet from './AddressBottomSheet';
 import LocationSelectionScreen from './LocationSelectionScreen';
+import { COMMON_ITEMS } from '../constants.tsx';
 
 interface PaymentSummaryPageProps {
   cart: { [key: string]: { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } } };
@@ -27,7 +28,20 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
   const itemTotal = selectedServices.reduce((total, s) => {
     const priceStr = s.price || '0';
     const basePrice = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
-    const extraPrice = s.extraItems * 500;
+    
+    // Calculate extra price based on inventory
+    let extraPrice = 0;
+    if (s.extraInventory) {
+      extraPrice = Object.entries(s.extraInventory).reduce((acc, [name, qty]) => {
+        const item = COMMON_ITEMS.find(i => i.name === name);
+        const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+        return acc + (price * qty);
+      }, 0);
+    } else {
+      // Fallback to generic extra items if no inventory
+      extraPrice = s.extraItems * 500;
+    }
+    
     return total + ((basePrice + extraPrice) * s.quantity);
   }, 0);
 
@@ -86,7 +100,21 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
             {service.extraItems > 0 && (
               <div className="flex justify-between items-center mt-1">
                 <span className="text-blue-600 font-bold text-[11px] uppercase tracking-wider">+ {service.extraItems} Extra Item{service.extraItems > 1 ? 's' : ''}</span>
-                <span className="text-blue-600 font-bold text-[11px]">₹{(service.extraItems * 500 * service.quantity).toLocaleString()}</span>
+                <span className="text-blue-600 font-bold text-[11px]">
+                  ₹{(() => {
+                    let extraPrice = 0;
+                    if (service.extraInventory) {
+                      extraPrice = Object.entries(service.extraInventory).reduce((acc, [name, qty]) => {
+                        const item = COMMON_ITEMS.find(i => i.name === name);
+                        const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                        return acc + (price * qty);
+                      }, 0);
+                    } else {
+                      extraPrice = service.extraItems * 500;
+                    }
+                    return (extraPrice * service.quantity).toLocaleString();
+                  })()}
+                </span>
               </div>
             )}
           </div>

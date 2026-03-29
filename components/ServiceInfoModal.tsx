@@ -44,6 +44,14 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
     return (Object.values(selectedInventory) as number[]).reduce((a: number, b: number) => a + b, 0);
   }, [selectedInventory]);
 
+  const extraCost = useMemo(() => {
+    return (Object.entries(selectedInventory) as [string, number][]).reduce((total, [name, qty]) => {
+      const item = COMMON_ITEMS.find(i => i.name === name);
+      const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+      return total + (price * qty);
+    }, 0);
+  }, [selectedInventory]);
+
   React.useEffect(() => {
     if (isOpen) {
       setSelectedInventory({});
@@ -209,7 +217,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
                           ))}
                           <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
                             <span className="text-xs font-black text-slate-900 uppercase">Extra Cost</span>
-                            <span className="text-sm font-black text-blue-600">₹{(totalSelectedCount * 500).toLocaleString()}</span>
+                            <span className="text-sm font-black text-blue-600">₹{extraCost.toLocaleString()}</span>
                           </div>
                         </div>
                       )}
@@ -222,7 +230,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
                   <h4 className="font-black text-slate-900 mb-4">Additional Charges for Extra Items</h4>
                   <ul className="space-y-3">
                     <li className="text-sm text-slate-600 font-medium flex items-center justify-between">
-                      <span>₹100 per extra box</span>
+                      <span>₹50 per extra box</span>
                       <span className="text-blue-600 font-bold">Extra Box</span>
                     </li>
                     <li className="text-sm text-slate-600 font-medium flex items-center justify-between">
@@ -346,7 +354,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
                       </div>
                       <div>
                         <p className="text-xs font-black text-slate-900">{totalSelectedCount} Items</p>
-                        <p className="text-[10px] font-bold text-blue-600 uppercase">₹{(totalSelectedCount * 500).toLocaleString()} Extra</p>
+                        <p className="text-[10px] font-bold text-blue-600 uppercase">₹{extraCost.toLocaleString()} Extra</p>
                       </div>
                     </div>
                     <button 

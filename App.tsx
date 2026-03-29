@@ -3,7 +3,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDocFromServer, collection, setDoc, serverTimestamp, onSnapshot, query, orderBy, collectionGroup, updateDoc, where } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './services/firebase';
 import { BookingStep, BookingDetails, PriceEstimate, ConfirmedBooking } from './types.ts';
-import { ICONS } from './constants.tsx';
+import { ICONS, COMMON_ITEMS } from './constants.tsx';
 import LocationStep from './components/LocationStep.tsx';
 import InventoryStep from './components/InventoryStep.tsx';
 import ServiceTypeStep from './components/ServiceTypeStep.tsx';
@@ -321,8 +321,12 @@ const App: React.FC = () => {
       const finalPrice = selectedServices.reduce((total, s) => {
         const priceStr = s.price || '0';
         const basePrice = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
-        const extraPrice = s.extraItems * 500;
-        return total + ((basePrice + extraPrice) * s.quantity);
+        const extraPrice = Object.entries(s.extraInventory || {}).reduce((total, [name, qty]) => {
+          const item = COMMON_ITEMS.find(i => i.name === name);
+          const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+          return total + (price * (qty as number));
+        }, 0);
+        return total + ((basePrice * s.quantity) + (extraPrice * s.quantity));
       }, 0);
       return {
         basePrice: finalPrice,

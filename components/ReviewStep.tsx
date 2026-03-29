@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { BookingDetails, PriceEstimate } from '../types';
-import { ICONS } from '../constants';
+import { ICONS, COMMON_ITEMS } from '../constants';
 
 interface Props {
   booking: BookingDetails;
@@ -43,10 +43,28 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [] 
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-black text-purple-600">₹{((parseInt(service.price.replace(/[^0-9]/g, '')) || 0) * service.quantity + (service.extraItems * 500 * service.quantity)).toLocaleString()}</p>
+                        <p className="text-lg font-black text-purple-600">
+                          ₹{(() => {
+                            const basePrice = parseInt(service.price.replace(/[^0-9]/g, '')) || 0;
+                            const extraPrice = Object.entries(service.extraInventory || {}).reduce((total, [name, qty]) => {
+                              const item = COMMON_ITEMS.find(i => i.name === name);
+                              const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                              return total + (price * (qty as number));
+                            }, 0);
+                            return ((basePrice + extraPrice) * service.quantity).toLocaleString();
+                          })()}
+                        </p>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Quantity: {service.quantity}</p>
                         {service.extraItems > 0 && (
-                          <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">+{service.extraItems} Extra Items (₹{(service.extraItems * 500).toLocaleString()} each)</p>
+                          <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">
+                            +{service.extraItems} Extra Items (₹{
+                              Object.entries(service.extraInventory || {}).reduce((total, [name, qty]) => {
+                                const item = COMMON_ITEMS.find(i => i.name === name);
+                                const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                                return total + (price * (qty as number));
+                              }, 0).toLocaleString()
+                            } total extra)
+                          </p>
                         )}
                       </div>
                     </div>

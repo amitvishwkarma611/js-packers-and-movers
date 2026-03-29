@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Star, ShoppingCart } from 'lucide-react';
+import { COMMON_ITEMS } from '../constants';
 import ServiceInfoModal from './ServiceInfoModal';
 
 export interface ServiceItem {
@@ -115,7 +116,6 @@ export const interCityMovingServices: ServiceItem[] = [
     price: '₹29,800',
     description: 'Our 3 BHK Inter-City Moving Service ensures professional, efficient relocation for large households.',
     image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=200',
-    truckSize: '19ft Dedicated Truck',
     includedServices: ['Premium multi-layer packing', 'Loading and unloading', 'Inter-city transportation', 'Full furniture disassembly/reassembly', 'Unpacking services'],
     includedItems: ['3 Double Beds', '3 Mattresses', '3 Wardrobes', '1 Refrigerator (Double Door)', '1 Washing Machine', '1 Dining Table', 'Sofa Set (5 seater)', '25 to 30 Boxes of personal belongings']
   },
@@ -208,7 +208,11 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
     const service = [...localMovingServices, ...interCityMovingServices].find(s => s.id === id);
     if (!service) return total;
     const basePrice = parseInt(service.price.replace(/[₹,]/g, ''));
-    const extraPrice = item.extraItems * 500;
+    const extraPrice = Object.entries(item.extraInventory || {}).reduce((totalExtra, [name, qty]) => {
+      const commonItem = COMMON_ITEMS.find(i => i.name === name);
+      const price = (commonItem?.category.startsWith('Packing')) ? 50 : 500;
+      return totalExtra + (price * (qty as number));
+    }, 0);
     return total + ((basePrice + extraPrice) * item.quantity);
   }, 0);
 
