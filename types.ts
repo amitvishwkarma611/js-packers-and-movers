@@ -27,6 +27,7 @@ export interface BookingDetails {
   serviceType: 'Standard' | 'Premium';
   moveSlot?: string;
   selectedServices?: any[];
+  userMobile?: string;
 }
 
 export interface PriceEstimate {

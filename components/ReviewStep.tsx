@@ -7,9 +7,10 @@ interface Props {
   booking: BookingDetails;
   estimate: PriceEstimate;
   selectedServices?: any[];
+  onUpdateMobile: (mobile: string) => void;
 }
 
-const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [] }) => {
+const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [], onUpdateMobile }) => {
   return (
     <div className="animate-fadeIn">
       <div className="mb-10">
@@ -19,6 +20,39 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [] 
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-6">
+          {/* Contact Information */}
+          <div className="bg-white p-6 rounded-[24px] border-2 border-blue-100 shadow-lg shadow-blue-50">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                <ICONS.Phone className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-slate-900">Contact Information</h3>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Mobile Number (Required for WhatsApp Updates)</label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">+91</div>
+                  <input 
+                    type="tel" 
+                    placeholder="Enter 10-digit mobile number"
+                    value={booking.userMobile || ''}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      onUpdateMobile(val);
+                    }}
+                    className="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-bold text-slate-900"
+                    required
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2 italic font-medium">
+                  * We'll send booking confirmation and updates to this number via WhatsApp.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Selected Packages */}
           {selectedServices.length > 0 && (
             <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm">

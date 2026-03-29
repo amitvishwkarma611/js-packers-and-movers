@@ -417,7 +417,7 @@ const App: React.FC = () => {
         createdAt: serverTimestamp(),
         userUID: auth.currentUser.uid,
         userName: user?.name || user?.email?.split('@')[0] || 'User',
-        userMobile: user?.mobileNumber || '',
+        userMobile: booking.userMobile || user?.mobileNumber || '',
         userEmail: user?.email || '',
         // Also store the detailed objects so the UI can render them
         details: { 
@@ -426,6 +426,12 @@ const App: React.FC = () => {
         },
         estimate: displayEstimate
       };
+
+      // Update user's mobile number in profile if it's new
+      if (booking.userMobile && booking.userMobile !== user?.mobileNumber) {
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userRef, { mobileNumber: booking.userMobile });
+      }
 
       const docRef = doc(db, "bookings", bookingId);
       await setDoc(docRef, newBooking);
@@ -491,7 +497,7 @@ const App: React.FC = () => {
       return !booking.moveDate || !booking.moveSlot;
     }
     if (currentStep === BookingStep.REVIEW) {
-      return isProcessingPayment;
+      return isProcessingPayment || !booking.userMobile || booking.userMobile.length !== 10;
     }
     return false;
   }, [currentStep, booking, isProcessingPayment]);
@@ -803,6 +809,7 @@ const App: React.FC = () => {
                         booking={booking}
                         estimate={displayEstimate}
                         selectedServices={selectedServices}
+                        onUpdateMobile={(mobile) => setBooking(prev => ({ ...prev, userMobile: mobile }))}
                       />
                     )}
                   </div>
