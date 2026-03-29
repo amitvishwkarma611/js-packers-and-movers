@@ -296,27 +296,72 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                   <h4 className="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-4">Selected Packages</h4>
                   <div className="space-y-4">
                     {selectedBooking.details.selectedServices.map((service, idx) => (
-                      <div key={idx} className="bg-purple-50/30 rounded-3xl border border-purple-100/50 p-5 flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow-sm border border-purple-100">
-                            {service.icon}
+                      <div key={idx} className="bg-purple-50/30 rounded-3xl border border-purple-100/50 overflow-hidden">
+                        <div className="p-5 flex justify-between items-center">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow-sm border border-purple-100">
+                              {service.icon}
+                            </div>
+                            <div>
+                              <p className="text-sm font-black text-slate-900">{service.title}</p>
+                              <p className="text-[10px] text-purple-600 font-black uppercase tracking-widest">{service.category}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-black text-slate-900">{service.title}</p>
-                            <p className="text-[10px] text-purple-600 font-black uppercase tracking-widest">{service.category}</p>
+                          <div className="text-right">
+                            <p className="text-sm font-black text-slate-900">Qty: {service.quantity}</p>
+                            {service.extraItems > 0 && (
+                              <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">+{service.extraItems} Extra Items</p>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm font-black text-slate-900">Qty: {service.quantity}</p>
-                          {service.extraItems > 0 && (
-                            <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">+{service.extraItems} Extra Items</p>
+                        
+                        {/* Included Services & Items */}
+                        <div className="px-5 pb-5 space-y-4">
+                          {service.includedServices && service.includedServices.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <ICONS.CheckCircle className="w-3 h-3 text-emerald-500" />
+                                Included Services
+                              </h5>
+                              <ul className="grid grid-cols-1 gap-1.5 pl-5">
+                                {service.includedServices.map((item: string, i: number) => (
+                                  <li key={i} className="text-[11px] text-slate-600 font-bold flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-emerald-200" />
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {(service.includedItems && service.includedItems.length > 0 || (service.extraInventory && Object.keys(service.extraInventory).length > 0)) && (
+                            <div className="space-y-2">
+                              <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <ICONS.Info className="w-3 h-3 text-blue-500" />
+                                Included Items
+                              </h5>
+                              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pl-5">
+                                {service.includedItems?.map((item: string, i: number) => (
+                                  <li key={i} className="text-[11px] text-slate-600 font-bold flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-blue-200" />
+                                    {item}
+                                  </li>
+                                ))}
+                                {service.extraInventory && Object.entries(service.extraInventory).map(([name, qty], i) => (
+                                  <li key={`extra-${i}`} className="text-[11px] text-blue-600 font-black flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-blue-400" />
+                                    {name} <span className="text-[9px] opacity-70">×{qty as number}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+              </div>
+            )}
 
               <div className="mb-10">
                 <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Inventory Breakdown</h4>
