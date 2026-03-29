@@ -12,24 +12,16 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [activePicker, setActivePicker] = useState<'pickup' | 'drop' | null>(null);
 
-  const isServiceArea = (address: string) => {
+  const isMumbai = (address: string) => {
     const lower = address.toLowerCase();
     return lower.includes('mumbai') || 
-           lower.includes('thane') || 
-           lower.includes('navi mumbai') ||
-           lower.includes('mumbai suburban') ||
-           lower.includes('mumbai city') ||
-           lower.includes('mira bhayandar') ||
-           lower.includes('kalyan') ||
-           lower.includes('dombivli') ||
-           lower.includes('vasai') ||
-           lower.includes('virar');
+           lower.includes('navi mumbai');
   };
 
   const handleSetLocationFromMap = (address: string) => {
     if (activePicker === 'pickup') {
-      if (!isServiceArea(address)) {
-        alert("We currently only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions. Please select a location within these areas.");
+      if (!isMumbai(address)) {
+        alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please select a location within these areas.");
         return;
       }
       setBooking({ ...booking, pickupAddress: address });
@@ -47,8 +39,8 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
           const data = await res.json();
           const address = data.display_name || 'Current Location Found';
-          if (!isServiceArea(address)) {
-            alert("We currently only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions. Your current location seems to be outside our service area.");
+          if (!isMumbai(address)) {
+            alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Your current location seems to be outside our service area.");
             setBooking({ ...booking, pickupAddress: '' });
             return;
           }
@@ -101,16 +93,16 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
                     type="text"
                     placeholder="Search building or street address..."
                     className={`w-full sm:pl-5 pl-12 pr-14 py-4 bg-white border rounded-2xl focus:ring-4 outline-none transition-all font-semibold shadow-sm text-slate-900 ${
-                      booking.pickupAddress && !isServiceArea(booking.pickupAddress) 
+                      booking.pickupAddress && !isMumbai(booking.pickupAddress) 
                         ? 'border-red-300 focus:border-red-500 focus:ring-red-500/5' 
                         : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/5'
                     }`}
                     value={booking.pickupAddress}
                     onChange={(e) => handlePickupChange(e.target.value)}
                   />
-                  {booking.pickupAddress && !isServiceArea(booking.pickupAddress) && (
+                  {booking.pickupAddress && !isMumbai(booking.pickupAddress) && (
                     <p className="mt-2 text-xs font-bold text-red-500 animate-shake">
-                      * We only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions
+                      * We only provide pickup services from Mumbai & Navi Mumbai
                     </p>
                   )}
                   <button 

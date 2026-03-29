@@ -497,20 +497,12 @@ const App: React.FC = () => {
   const isNextDisabled = useMemo(() => {
     if (isProcessingPayment) return true;
     if (currentStep === BookingStep.LOCATION) {
-      const isServiceArea = (address: string) => {
+      const isMumbai = (address: string) => {
         const lower = address.toLowerCase();
         return lower.includes('mumbai') || 
-               lower.includes('thane') || 
-               lower.includes('navi mumbai') ||
-               lower.includes('mumbai suburban') ||
-               lower.includes('mumbai city') ||
-               lower.includes('mira bhayandar') ||
-               lower.includes('kalyan') ||
-               lower.includes('dombivli') ||
-               lower.includes('vasai') ||
-               lower.includes('virar');
+               lower.includes('navi mumbai');
       };
-      return !booking.pickupAddress || !isServiceArea(booking.pickupAddress) || !booking.dropAddress || !booking.moveDate;
+      return !booking.pickupAddress || !isMumbai(booking.pickupAddress) || !booking.dropAddress || !booking.moveDate;
     }
     if (currentStep === BookingStep.INVENTORY) {
       return booking.inventory.length === 0;
