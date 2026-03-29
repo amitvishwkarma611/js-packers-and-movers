@@ -26,6 +26,7 @@ export interface BookingDetails {
   inventory: MoveItem[];
   serviceType: 'Standard' | 'Premium';
   moveSlot?: string;
+  selectedServices?: any[];
 }
 
 export interface PriceEstimate {

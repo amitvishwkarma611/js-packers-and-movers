@@ -272,15 +272,68 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
               </div>
 
               <div className="mb-10">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Inventory Breakdown</h4>
-                <div className="bg-slate-50 rounded-[32px] p-6 grid grid-cols-2 gap-4">
-                  {selectedBooking.details.inventory.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-100">
-                      <span className="text-sm font-bold text-slate-900">{item.name}</span>
-                      <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-xs font-black">×{item.quantity}</span>
-                    </div>
-                  ))}
+                <h4 className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-4">Schedule & Service</h4>
+                <div className="grid grid-cols-2 gap-6 bg-amber-50/50 p-6 rounded-3xl border border-amber-100">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Move Date</p>
+                    <p className="text-sm font-bold text-slate-900">{new Date(selectedBooking.details.moveDate).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Time Slot</p>
+                    <p className="text-sm font-bold text-slate-900">{selectedBooking.details.moveSlot || 'Morning (7 AM - 10 AM)'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Service Type</p>
+                    <span className={`inline-block px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest mt-1 ${selectedBooking.details.serviceType === 'Premium' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
+                      {selectedBooking.details.serviceType}
+                    </span>
+                  </div>
                 </div>
+              </div>
+
+              {selectedBooking.details.selectedServices && selectedBooking.details.selectedServices.length > 0 && (
+                <div className="mb-10">
+                  <h4 className="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-4">Selected Packages</h4>
+                  <div className="space-y-4">
+                    {selectedBooking.details.selectedServices.map((service, idx) => (
+                      <div key={idx} className="bg-purple-50/30 rounded-3xl border border-purple-100/50 p-5 flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow-sm border border-purple-100">
+                            {service.icon}
+                          </div>
+                          <div>
+                            <p className="text-sm font-black text-slate-900">{service.title}</p>
+                            <p className="text-[10px] text-purple-600 font-black uppercase tracking-widest">{service.category}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-black text-slate-900">Qty: {service.quantity}</p>
+                          {service.extraItems > 0 && (
+                            <p className="text-[10px] text-blue-600 font-black uppercase tracking-widest">+{service.extraItems} Extra Items</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-10">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Inventory Breakdown</h4>
+                {selectedBooking.details.inventory.length > 0 ? (
+                  <div className="bg-slate-50 rounded-[32px] p-6 grid grid-cols-2 gap-4">
+                    {selectedBooking.details.inventory.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-100">
+                        <span className="text-sm font-bold text-slate-900">{item.name}</span>
+                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-xs font-black">×{item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-slate-50 rounded-[32px] p-8 text-center border border-dashed border-slate-200">
+                    <p className="text-xs text-slate-400 font-bold">No individual inventory items. See packages above.</p>
+                  </div>
+                )}
               </div>
 
               <div className="bg-slate-900 text-white p-8 rounded-[32px]">

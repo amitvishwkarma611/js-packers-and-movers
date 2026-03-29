@@ -420,7 +420,10 @@ const App: React.FC = () => {
         userMobile: user?.mobileNumber || '',
         userEmail: user?.email || '',
         // Also store the detailed objects so the UI can render them
-        details: { ...booking },
+        details: { 
+          ...booking,
+          selectedServices: isFromCart ? selectedServices : []
+        },
         estimate: displayEstimate
       };
 
