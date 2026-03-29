@@ -498,9 +498,9 @@ const App: React.FC = () => {
     if (isProcessingPayment) return true;
     if (currentStep === BookingStep.LOCATION) {
       const isMumbai = (address: string) => {
+        if (!address) return false;
         const lower = address.toLowerCase();
-        return lower.includes('mumbai') || 
-               lower.includes('navi mumbai');
+        return lower.includes('mumbai') || lower.includes('navi mumbai');
       };
       return !booking.pickupAddress || !isMumbai(booking.pickupAddress) || !booking.dropAddress || !booking.moveDate;
     }

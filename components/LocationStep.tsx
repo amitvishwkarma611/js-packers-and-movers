@@ -13,9 +13,10 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
   const [activePicker, setActivePicker] = useState<'pickup' | 'drop' | null>(null);
 
   const isMumbai = (address: string) => {
+    if (!address) return false;
     const lower = address.toLowerCase();
-    return lower.includes('mumbai') || 
-           lower.includes('navi mumbai');
+    // Strictly Mumbai or Navi Mumbai
+    return lower.includes('mumbai') || lower.includes('navi mumbai');
   };
 
   const handleSetLocationFromMap = (address: string) => {

@@ -17,12 +17,19 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
   const leafletMap = useRef<any>(null);
   const markerRef = useRef<any>(null);
 
+  const isMumbai = (address: string) => {
+    if (!address) return false;
+    const lower = address.toLowerCase();
+    return lower.includes('mumbai') || lower.includes('navi mumbai');
+  };
+
   const reverseGeocode = async (lat: number, lng: number) => {
     setIsLoadingLocation(true);
     try {
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
       const data = await response.json();
-      setSelectedAddress(data.display_name || 'Address not found');
+      const addr = data.display_name || 'Address not found';
+      setSelectedAddress(addr);
     } catch (error) {
       setSelectedAddress('Error fetching address');
     } finally {
@@ -102,12 +109,20 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
   const handleManualSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      if (!isMumbai(searchQuery)) {
+        alert("We currently only provide services in Mumbai & Navi Mumbai. Please search for a location within these areas.");
+        return;
+      }
       onUpdateLocation(searchQuery);
       onClose();
     }
   };
 
   const confirmLocation = () => {
+    if (!isMumbai(selectedAddress)) {
+      alert("We currently only provide services in Mumbai & Navi Mumbai. Please select a location within these areas.");
+      return;
+    }
     onUpdateLocation(selectedAddress);
     onClose();
   };
