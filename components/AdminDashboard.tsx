@@ -221,14 +221,6 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                           <ICONS.Sparkles className="w-4 h-4" />
                         </button>
                       )}
-                      {(b.status === 'Completed' || b.status === 'Rejected' || b.status === 'Cancelled') && (
-                         <button 
-                            onClick={() => onUpdateStatus(b.id, 'Pending')}
-                            className="p-2 bg-slate-100 text-slate-400 rounded-xl hover:bg-slate-900 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest px-4 h-auto w-auto"
-                          >
-                            Reset
-                          </button>
-                      )}
                     </div>
                   </td>
                 </tr>
