@@ -251,6 +251,10 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
                 <span className="font-black">₹{estimate.laborCharges.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
+                <span className="text-slate-400 font-bold">Extra Items Price</span>
+                <span className="font-black">₹{estimate.extraItemsPrice.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
                 <span className="text-slate-400 font-bold">Transportation</span>
                 <span className="font-black">₹{estimate.transportation.toLocaleString()}</span>
               </div>

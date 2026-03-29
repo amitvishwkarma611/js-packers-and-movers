@@ -305,6 +305,7 @@ const App: React.FC = () => {
       packingCharges,
       laborCharges,
       transportation,
+      extraItemsPrice: 0,
       total: basePrice + packingCharges + laborCharges + transportation
     };
   }, [booking]);
@@ -319,8 +320,7 @@ const App: React.FC = () => {
 
     if (selectedServices.length > 0) {
       let totalBase = 0;
-      let totalPacking = 0;
-      let totalLabor = 0;
+      let totalExtra = 0;
 
       selectedServices.forEach(s => {
         const priceStr = s.price || '0';
@@ -330,21 +330,18 @@ const App: React.FC = () => {
         Object.entries(s.extraInventory || {}).forEach(([name, qty]) => {
           const item = COMMON_ITEMS.find(i => i.name === name);
           const price = (item?.category.startsWith('Packing')) ? 50 : 500;
-          if (item?.category.startsWith('Packing')) {
-            totalPacking += (price * (qty as number) * s.quantity);
-          } else {
-            totalLabor += (price * (qty as number) * s.quantity);
-          }
+          totalExtra += (price * (qty as number) * s.quantity);
         });
       });
 
-      const total = totalBase + totalPacking + totalLabor;
+      const total = totalBase + totalExtra;
 
       return {
         basePrice: totalBase,
-        packingCharges: totalPacking,
-        laborCharges: totalLabor,
+        packingCharges: 0,
+        laborCharges: 0,
         transportation: 0,
+        extraItemsPrice: totalExtra,
         total: total
       };
     }

@@ -35,6 +35,7 @@ export interface PriceEstimate {
   packingCharges: number;
   laborCharges: number;
   transportation: number;
+  extraItemsPrice: number;
   total: number;
 }
 
