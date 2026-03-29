@@ -511,7 +511,7 @@ const App: React.FC = () => {
   }, [cart]);
 
   const handleLoginSuccess = (email: string) => {
-    const isAdmin = email.toLowerCase() === 'admin@ajpackers.com';
+    const isAdmin = email.toLowerCase() === 'sv4817055@gmail.com';
     setUser({ email, isAdmin });
     if (isAdmin) setView('ADMIN');
     else setView('HOME');

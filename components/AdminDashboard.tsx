@@ -213,13 +213,26 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                         </>
                       )}
                       {b.status === 'Accepted' && (
-                        <button 
-                          onClick={() => onUpdateStatus(b.id, 'Completed')}
-                          className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all"
-                          title="Mark Completed"
-                        >
-                          <ICONS.Sparkles className="w-4 h-4" />
-                        </button>
+                        <>
+                          {b.userMobile && (
+                            <a 
+                              href={`https://wa.me/${b.userMobile.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`)}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="p-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"
+                              title="WhatsApp Client"
+                            >
+                              <ICONS.WhatsApp className="w-4 h-4" />
+                            </a>
+                          )}
+                          <button 
+                            onClick={() => onUpdateStatus(b.id, 'Completed')}
+                            className="p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all"
+                            title="Mark Completed"
+                          >
+                            <ICONS.Sparkles className="w-4 h-4" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </td>
