@@ -12,8 +12,26 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
   const dateInputRef = useRef<HTMLInputElement>(null);
   const [activePicker, setActivePicker] = useState<'pickup' | 'drop' | null>(null);
 
+  const isServiceArea = (address: string) => {
+    const lower = address.toLowerCase();
+    return lower.includes('mumbai') || 
+           lower.includes('thane') || 
+           lower.includes('navi mumbai') ||
+           lower.includes('mumbai suburban') ||
+           lower.includes('mumbai city') ||
+           lower.includes('mira bhayandar') ||
+           lower.includes('kalyan') ||
+           lower.includes('dombivli') ||
+           lower.includes('vasai') ||
+           lower.includes('virar');
+  };
+
   const handleSetLocationFromMap = (address: string) => {
     if (activePicker === 'pickup') {
+      if (!isServiceArea(address)) {
+        alert("We currently only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions. Please select a location within these areas.");
+        return;
+      }
       setBooking({ ...booking, pickupAddress: address });
     } else {
       setBooking({ ...booking, dropAddress: address });
@@ -28,12 +46,22 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
           const data = await res.json();
-          setBooking({ ...booking, pickupAddress: data.display_name || 'Current Location Found' });
+          const address = data.display_name || 'Current Location Found';
+          if (!isServiceArea(address)) {
+            alert("We currently only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions. Your current location seems to be outside our service area.");
+            setBooking({ ...booking, pickupAddress: '' });
+            return;
+          }
+          setBooking({ ...booking, pickupAddress: address });
         } catch (e) {
           setBooking({ ...booking, pickupAddress: 'Location Found (Custom)' });
         }
       });
     }
+  };
+
+  const handlePickupChange = (val: string) => {
+    setBooking({ ...booking, pickupAddress: val });
   };
 
   return (
@@ -72,10 +100,19 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
                   <input
                     type="text"
                     placeholder="Search building or street address..."
-                    className="w-full sm:pl-5 pl-12 pr-14 py-4 bg-white border border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-semibold shadow-sm text-slate-900"
+                    className={`w-full sm:pl-5 pl-12 pr-14 py-4 bg-white border rounded-2xl focus:ring-4 outline-none transition-all font-semibold shadow-sm text-slate-900 ${
+                      booking.pickupAddress && !isServiceArea(booking.pickupAddress) 
+                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500/5' 
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-500/5'
+                    }`}
                     value={booking.pickupAddress}
-                    onChange={(e) => setBooking({ ...booking, pickupAddress: e.target.value })}
+                    onChange={(e) => handlePickupChange(e.target.value)}
                   />
+                  {booking.pickupAddress && !isServiceArea(booking.pickupAddress) && (
+                    <p className="mt-2 text-xs font-bold text-red-500 animate-shake">
+                      * We only provide pickup services from Mumbai, Navi Mumbai, Thane & surrounding regions
+                    </p>
+                  )}
                   <button 
                     onClick={() => setActivePicker('pickup')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-100 transition-colors"
