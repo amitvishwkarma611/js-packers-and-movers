@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ConfirmedBooking } from '../types';
-import { ICONS } from '../constants';
+import { ICONS, COMMON_ITEMS } from '../constants';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 

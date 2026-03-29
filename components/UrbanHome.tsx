@@ -31,6 +31,7 @@ interface Category {
   title: string;
   icon: React.ReactNode;
   color: string;
+  isHighlighted?: boolean;
 }
 
 interface Service {
@@ -59,23 +60,24 @@ const categories: Category[] = [
   { id: '3', title: 'Appliance Repair', icon: <Wrench className="w-6 h-6" />, color: 'bg-orange-100 text-orange-600' },
   { id: '4', title: 'Cleaning & Pest', icon: <Bug className="w-6 h-6" />, color: 'bg-green-100 text-green-600' },
   { id: '5', title: 'Mosquito Net', icon: <LayoutGrid className="w-6 h-6" />, color: 'bg-cyan-100 text-cyan-600' },
-  { id: '6', title: 'Movers & Storage', icon: <Truck className="w-6 h-6" />, color: 'bg-indigo-100 text-indigo-600' },
+  { id: '6', title: 'Movers & Storage', icon: <Truck className="w-6 h-6" />, color: 'bg-blue-600 text-white shadow-blue-200', isHighlighted: true },
   { id: '7', title: 'Renovation', icon: <Home className="w-6 h-6" />, color: 'bg-rose-100 text-rose-600' },
   { id: '8', title: 'Painting', icon: <Paintbrush className="w-6 h-6" />, color: 'bg-amber-100 text-amber-600' },
   { id: '9', title: 'More Categories', icon: <ArrowRight className="w-6 h-6" />, color: 'bg-slate-100 text-slate-600' },
 ];
 
 const banners = [
+  { id: '0', text: 'Safe & Reliable Movers & Storage', subtext: 'Book Now', color: 'bg-blue-700' },
   { id: '1', text: 'Full House Cleaning Starts at ₹2599', subtext: 'Book Now', color: 'bg-blue-600' },
   { id: '2', text: 'AC Service & Repair at ₹499', subtext: 'Expert Technicians', color: 'bg-indigo-600' },
   { id: '3', text: 'Professional Painting Services', subtext: 'Get Free Quote', color: 'bg-emerald-600' },
 ];
 
 const popularServices: Service[] = [
+  { id: 'm1', name: 'Local House Shifting', price: '₹1999', rating: 5.0, image: 'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?auto=format&fit=crop&q=80&w=400' },
   { id: '1', name: 'Deep House Cleaning', price: '₹2599', rating: 4.8, image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6958?auto=format&fit=crop&q=80&w=400' },
   { id: '2', name: 'AC Deep Cleaning', price: '₹599', rating: 4.9, image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400' },
   { id: '3', name: 'Bathroom Cleaning', price: '₹399', rating: 4.7, image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400' },
-  { id: '4', name: 'Sofa Cleaning', price: '₹499', rating: 4.8, image: 'https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?auto=format&fit=crop&q=80&w=400' },
 ];
 
 const cleaningServices: ServiceItem[] = [
@@ -218,15 +220,24 @@ const UrbanHome: React.FC<UrbanHomeProps> = ({ onStartBooking, onSelectMoversSer
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleCategoryClick(cat)}
-              className="flex flex-col items-center gap-2 group"
+              className="flex flex-col items-center gap-2 group relative"
             >
+              {cat.isHighlighted && (
+                <div className="absolute -top-2 -right-1 z-10 bg-amber-400 text-slate-900 text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-sm border border-white animate-bounce">
+                  POPULAR
+                </div>
+              )}
               <div className={cn(
                 "w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm transition-shadow group-hover:shadow-md",
-                cat.color
+                cat.color,
+                cat.isHighlighted && "animate-pulse ring-4 ring-blue-100 scale-110 shadow-lg shadow-blue-400/50"
               )}>
                 {cat.icon}
               </div>
-              <span className="text-[11px] font-bold text-slate-700 text-center leading-tight">
+              <span className={cn(
+                "text-[11px] font-bold text-center leading-tight",
+                cat.isHighlighted ? "text-blue-600" : "text-slate-700"
+              )}>
                 {cat.title}
               </span>
             </motion.button>
