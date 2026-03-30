@@ -414,7 +414,7 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                   <div className="flex justify-between"><span>Packing:</span> <span className="text-white">₹{selectedBooking.estimate.packingCharges}</span></div>
                   <div className="flex justify-between"><span>Labor:</span> <span className="text-white">₹{selectedBooking.estimate.laborCharges}</span></div>
                   <div className="flex justify-between"><span>Extra:</span> <span className="text-white">₹{selectedBooking.estimate.extraItemsPrice}</span></div>
-                  <div className="flex justify-between"><span>Fuel:</span> <span className="text-white">₹{selectedBooking.estimate.transportation}</span></div>
+                  <div className="flex justify-between"><span>Extra Distance Cost:</span> <span className="text-white">₹{selectedBooking.estimate.transportation}</span></div>
                 </div>
               </div>
             </div>

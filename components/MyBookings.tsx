@@ -172,7 +172,7 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     doc.text(`INR ${estimate.extraItemsPrice.toLocaleString()}`, 190, breakdownY, { align: 'right' });
     
     breakdownY += 7;
-    doc.text('Transportation Fare:', summaryX, breakdownY);
+    doc.text('Extra Distance Cost:', summaryX, breakdownY);
     doc.text(`INR ${estimate.transportation.toLocaleString()}`, 190, breakdownY, { align: 'right' });
 
     breakdownY += 10;
