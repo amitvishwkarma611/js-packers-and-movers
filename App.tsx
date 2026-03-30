@@ -396,19 +396,22 @@ const App: React.FC = () => {
         });
       });
 
-      const total = totalBase + totalExtra;
+      const distance = booking.distance || 0;
+      const transportation = distance <= 10 ? 0 : (distance - 10) * 30;
+
+      const total = totalBase + totalExtra + transportation;
 
       return {
         basePrice: totalBase,
         packingCharges: 0,
         laborCharges: 0,
-        transportation: 0,
+        transportation: transportation,
         extraItemsPrice: totalExtra,
         total: total
       };
     }
     return priceEstimate;
-  }, [cart, priceEstimate]);
+  }, [cart, priceEstimate, booking.distance]);
 
   const updateQuantity = (id: string, delta: number) => {
     const updated = booking.inventory.map(item => {
@@ -880,6 +883,7 @@ const App: React.FC = () => {
                     {currentStep === BookingStep.REVIEW && (
                       <ReviewStep 
                         booking={booking}
+                        setBooking={setBooking}
                         estimate={displayEstimate}
                         selectedServices={selectedServices}
                         onUpdateMobile={(mobile) => setBooking(prev => ({ ...prev, userMobile: mobile }))}

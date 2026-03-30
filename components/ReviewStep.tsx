@@ -5,12 +5,13 @@ import { ICONS, COMMON_ITEMS } from '../constants';
 
 interface Props {
   booking: BookingDetails;
+  setBooking?: (b: BookingDetails) => void;
   estimate: PriceEstimate;
   selectedServices?: any[];
   onUpdateMobile: (mobile: string) => void;
 }
 
-const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [], onUpdateMobile }) => {
+const ReviewStep: React.FC<Props> = ({ booking, setBooking, estimate, selectedServices = [], onUpdateMobile }) => {
   return (
     <div className="animate-fadeIn">
       <div className="mb-10">
@@ -200,12 +201,20 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
               </div>
             </div>
             
-            {booking.distance > 0 && (
-              <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estimated Distance</span>
+            <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estimated Distance (KM)</span>
+              {setBooking ? (
+                <input 
+                  type="number" 
+                  min="0"
+                  className="w-24 text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-right"
+                  value={booking.distance === 0 ? 0 : (booking.distance || '')}
+                  onChange={(e) => setBooking({...booking, distance: parseInt(e.target.value) || 0})}
+                />
+              ) : (
                 <span className="text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">{booking.distance} KM</span>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Schedule Info */}
