@@ -64,6 +64,14 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
     }
   };
 
+  const getWhatsAppNumber = (mobile: string | undefined) => {
+    if (!mobile) return '';
+    let num = mobile.replace(/\D/g, '');
+    if (num.length === 10) return `91${num}`;
+    if (num.length === 11 && num.startsWith('0')) return `91${num.slice(1)}`;
+    return num;
+  };
+
   return (
     <div className="max-w-7xl mx-auto py-12 px-6 animate-fadeIn">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
@@ -215,7 +223,7 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                       {(b.status === 'Accepted' || b.status === 'Completed') && (
                         <>
                           <a 
-                            href={b.userMobile ? `https://wa.me/${b.userMobile.replace(/\D/g, '')}?text=${encodeURIComponent(
+                            href={b.userMobile ? `https://wa.me/${getWhatsAppNumber(b.userMobile)}?text=${encodeURIComponent(
                               b.status === 'Accepted' 
                                 ? `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`
                                 : `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been successfully completed! We hope you had a great experience with us. Thank you for choosing us!`
