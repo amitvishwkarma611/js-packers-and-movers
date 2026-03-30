@@ -18,6 +18,7 @@ export interface MoveItem {
 export interface BookingDetails {
   pickupAddress: string;
   dropAddress: string;
+  distance: number;
   moveDate: string;
   floorPickup: number;
   floorDrop: number;
@@ -25,6 +26,7 @@ export interface BookingDetails {
   hasLiftDrop: boolean;
   inventory: MoveItem[];
   serviceType: 'Standard' | 'Premium';
+  hasInsurance: boolean;
   moveSlot?: string;
   selectedServices?: any[];
   userMobile?: string;

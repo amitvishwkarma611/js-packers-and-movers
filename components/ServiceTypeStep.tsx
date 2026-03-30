@@ -131,6 +131,28 @@ const ServiceTypeStep: React.FC<Props> = ({ booking, setBooking }) => {
           </div>
         </button>
       </div>
+
+      <div className="mt-12 max-w-4xl mx-auto">
+        <div 
+          onClick={() => setBooking({ ...booking, hasInsurance: !booking.hasInsurance })}
+          className={`p-6 rounded-3xl border-2 flex items-center justify-between cursor-pointer transition-all ${booking.hasInsurance ? 'border-blue-600 bg-blue-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+        >
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${booking.hasInsurance ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.333 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+              </svg>
+            </div>
+            <div>
+              <h4 className="text-lg font-extrabold text-slate-900">Add Transit Insurance</h4>
+              <p className="text-sm text-slate-500 font-medium">Protect your belongings with our comprehensive transit insurance (2% of total cost).</p>
+            </div>
+          </div>
+          <div className={`w-14 h-8 rounded-full transition-all relative flex-shrink-0 ${booking.hasInsurance ? 'bg-blue-600' : 'bg-slate-300'}`}>
+            <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${booking.hasInsurance ? 'left-7' : 'left-1'}`} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

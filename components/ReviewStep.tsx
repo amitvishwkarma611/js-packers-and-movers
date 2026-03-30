@@ -82,7 +82,7 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
                             const basePrice = parseInt(service.price.replace(/[^0-9]/g, '')) || 0;
                             const extraPrice = Object.entries(service.extraInventory || {}).reduce((total, [name, qty]) => {
                               const item = COMMON_ITEMS.find(i => i.name === name);
-                              const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                              const price = item?.price || 500;
                               return total + (price * (qty as number));
                             }, 0);
                             return ((basePrice + extraPrice) * service.quantity).toLocaleString();
@@ -94,7 +94,7 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
                             +{service.extraItems} Extra Items (₹{
                               Object.entries(service.extraInventory || {}).reduce((total, [name, qty]) => {
                                 const item = COMMON_ITEMS.find(i => i.name === name);
-                                const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                                const price = item?.price || 500;
                                 return total + (price * (qty as number));
                               }, 0).toLocaleString()
                             } total extra)
@@ -199,6 +199,13 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
                 </div>
               </div>
             </div>
+            
+            {booking.distance > 0 && (
+              <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estimated Distance</span>
+                <span className="text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">{booking.distance} KM</span>
+              </div>
+            )}
           </div>
 
           {/* Schedule Info */}
@@ -258,6 +265,12 @@ const ReviewStep: React.FC<Props> = ({ booking, estimate, selectedServices = [],
                 <span className="text-slate-400 font-bold">Transportation</span>
                 <span className="font-black">₹{estimate.transportation.toLocaleString()}</span>
               </div>
+              {booking.hasInsurance && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold">Transit Insurance (2%)</span>
+                  <span className="font-black">₹{Math.round((estimate.total - (estimate.total / 1.02))).toLocaleString()}</span>
+                </div>
+              )}
               <div className="h-px bg-white/10 my-2" />
               <div className="flex justify-between items-center">
                 <span className="text-base font-black uppercase tracking-widest text-blue-400">Total Amount</span>

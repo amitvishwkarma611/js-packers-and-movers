@@ -287,26 +287,40 @@ const App: React.FC = () => {
 
   const priceEstimate = useMemo((): PriceEstimate => {
     const totalItems = booking.inventory.reduce((acc, item) => acc + item.quantity, 0);
-    const weightFactor = booking.inventory.reduce((acc, item) => {
-      const multiplier = item.weightClass === 'Heavy' ? 1.5 : item.weightClass === 'Medium' ? 1.2 : 1;
-      return acc + (item.quantity * multiplier);
-    }, 0);
+    
+    let itemsCost = 0;
+    let cartonsCost = 0;
+
+    booking.inventory.forEach(item => {
+      const catalogItem = COMMON_ITEMS.find(i => i.name === item.name);
+      if (catalogItem) {
+        if (catalogItem.category === 'Small Items (Cartons)') {
+          cartonsCost += catalogItem.price * item.quantity;
+        } else {
+          itemsCost += catalogItem.price * item.quantity;
+        }
+      }
+    });
 
     const floorFactor = (booking.floorPickup + booking.floorDrop) * 200;
     const liftFactor = (!booking.hasLiftPickup || !booking.hasLiftDrop) ? 500 : 0;
     
     const basePrice = 2000;
-    const packingCharges = weightFactor * 150 + (booking.serviceType === 'Premium' ? 1000 : 0);
-    const laborCharges = weightFactor * 300 + floorFactor + liftFactor;
-    const transportation = 1500 + (totalItems * 50);
+    const packingCharges = booking.serviceType === 'Premium' ? 1000 : 0;
+    
+    const distance = booking.distance || 0;
+    const transportation = distance > 0 ? distance * 20 : 1500 + (totalItems * 50); // Fallback if no distance
+
+    const subTotal = basePrice + itemsCost + cartonsCost + transportation + floorFactor + liftFactor + packingCharges;
+    const insuranceCost = booking.hasInsurance ? subTotal * 0.02 : 0;
 
     return {
       basePrice,
       packingCharges,
-      laborCharges,
+      laborCharges: floorFactor + liftFactor,
       transportation,
-      extraItemsPrice: 0,
-      total: basePrice + packingCharges + laborCharges + transportation
+      extraItemsPrice: itemsCost + cartonsCost,
+      total: subTotal + insuranceCost
     };
   }, [booking]);
 
@@ -329,7 +343,7 @@ const App: React.FC = () => {
 
         Object.entries(s.extraInventory || {}).forEach(([name, qty]) => {
           const item = COMMON_ITEMS.find(i => i.name === name);
-          const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+          const price = item?.price || 500;
           totalExtra += (price * (qty as number) * s.quantity);
         });
       });

@@ -34,7 +34,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
     if (s.extraInventory) {
       extraPrice = Object.entries(s.extraInventory).reduce((acc, [name, qty]) => {
         const item = COMMON_ITEMS.find(i => i.name === name);
-        const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+        const price = item?.price || 500;
         return acc + (price * qty);
       }, 0);
     } else {
@@ -106,7 +106,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
                     if (service.extraInventory) {
                       extraPrice = Object.entries(service.extraInventory).reduce((acc, [name, qty]) => {
                         const item = COMMON_ITEMS.find(i => i.name === name);
-                        const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+                        const price = item?.price || 500;
                         return acc + (price * qty);
                       }, 0);
                     } else {

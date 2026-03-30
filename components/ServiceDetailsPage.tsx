@@ -210,7 +210,7 @@ const ServiceDetailsPage: React.FC<ServiceDetailsPageProps> = ({ onBack, onProce
     const basePrice = parseInt(service.price.replace(/[₹,]/g, ''));
     const extraPrice = Object.entries(item.extraInventory || {}).reduce((totalExtra, [name, qty]) => {
       const commonItem = COMMON_ITEMS.find(i => i.name === name);
-      const price = (commonItem?.category.startsWith('Packing')) ? 50 : 500;
+      const price = commonItem?.price || 500;
       return totalExtra + (price * (qty as number));
     }, 0);
     return total + ((basePrice + extraPrice) * item.quantity);

@@ -47,7 +47,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
   const extraCost = useMemo(() => {
     return (Object.entries(selectedInventory) as [string, number][]).reduce((total, [name, qty]) => {
       const item = COMMON_ITEMS.find(i => i.name === name);
-      const price = (item?.category.startsWith('Packing')) ? 50 : 500;
+      const price = item?.price || 500;
       return total + (price * qty);
     }, 0);
   }, [selectedInventory]);
@@ -193,7 +193,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
                           </div>
                           <div className="text-left">
                             <h5 className="font-black text-slate-900">Add more items</h5>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">₹500 per extra item</p>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Prices vary by item</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -230,11 +230,7 @@ const ServiceInfoModal: React.FC<ServiceInfoModalProps> = ({ isOpen, onClose, se
                   <h4 className="font-black text-slate-900 mb-4">Additional Charges for Extra Items</h4>
                   <ul className="space-y-3">
                     <li className="text-sm text-slate-600 font-medium flex items-center justify-between">
-                      <span>₹50 per extra box</span>
-                      <span className="text-blue-600 font-bold">Extra Box</span>
-                    </li>
-                    <li className="text-sm text-slate-600 font-medium flex items-center justify-between">
-                      <span>₹500 per extra item (e.g., additional bed, table)</span>
+                      <span>Prices vary by item (e.g., additional bed, table)</span>
                       <span className="text-blue-600 font-bold">Extra Item</span>
                     </li>
                   </ul>

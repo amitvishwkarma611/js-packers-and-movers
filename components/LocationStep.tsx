@@ -171,6 +171,17 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
                   </button>
                 </div>
               </div>
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col">
+                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Distance (in KM)</label>
+                <input 
+                  type="number" 
+                  min="0"
+                  placeholder="e.g. 15"
+                  className="bg-transparent border-none p-0 focus:ring-0 text-lg font-bold text-slate-900 placeholder:text-slate-300"
+                  value={booking.distance || ''}
+                  onChange={(e) => setBooking({...booking, distance: parseInt(e.target.value) || 0})}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col">
                   <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Floor Number</label>
