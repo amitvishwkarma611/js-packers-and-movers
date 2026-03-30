@@ -178,7 +178,7 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
                   min="0"
                   placeholder="e.g. 15"
                   className="bg-transparent border-none p-0 focus:ring-0 text-lg font-bold text-slate-900 placeholder:text-slate-300"
-                  value={booking.distance || ''}
+                  value={booking.distance === 0 ? 0 : (booking.distance || '')}
                   onChange={(e) => setBooking({...booking, distance: parseInt(e.target.value) || 0})}
                 />
               </div>

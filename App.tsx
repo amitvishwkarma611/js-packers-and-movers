@@ -276,6 +276,7 @@ const App: React.FC = () => {
   const [booking, setBooking] = useState<BookingDetails>({
     pickupAddress: '',
     dropAddress: '',
+    distance: 0,
     moveDate: new Date().toISOString().split('T')[0],
     floorPickup: 0,
     floorDrop: 0,
@@ -284,6 +285,53 @@ const App: React.FC = () => {
     inventory: [],
     serviceType: 'Standard'
   });
+
+  // Auto-calculate distance
+  useEffect(() => {
+    const fetchDistance = async () => {
+      if (!booking.pickupAddress || !booking.dropAddress) return;
+      
+      try {
+        const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(booking.pickupAddress)}`);
+        const pickupData = await pickupRes.json();
+        
+        const dropRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(booking.dropAddress)}`);
+        const dropData = await dropRes.json();
+        
+        if (pickupData.length > 0 && dropData.length > 0) {
+          const lat1 = parseFloat(pickupData[0].lat);
+          const lon1 = parseFloat(pickupData[0].lon);
+          const lat2 = parseFloat(dropData[0].lat);
+          const lon2 = parseFloat(dropData[0].lon);
+          
+          const R = 6371; 
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLon = (lon2 - lon1) * Math.PI / 180;
+          const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+          const distance = R * c; 
+          
+          const estimatedDrivingDistance = Math.ceil(distance * 1.2);
+          
+          setBooking(prev => {
+            if (prev.distance === estimatedDrivingDistance) return prev;
+            return { ...prev, distance: estimatedDrivingDistance };
+          });
+        }
+      } catch (error) {
+        console.error("Error calculating distance:", error);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      fetchDistance();
+    }, 1500);
+
+    return () => clearTimeout(timeoutId);
+  }, [booking.pickupAddress, booking.dropAddress]);
 
   const priceEstimate = useMemo((): PriceEstimate => {
     const totalItems = booking.inventory.reduce((acc, item) => acc + item.quantity, 0);
