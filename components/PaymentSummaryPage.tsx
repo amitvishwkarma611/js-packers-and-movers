@@ -18,6 +18,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
   const [isLocationScreenOpen, setIsLocationScreenOpen] = useState(false);
   const [locationScreenCategory, setLocationScreenCategory] = useState<'Pickup' | 'Drop'>('Pickup');
   const [currentLocation, setCurrentLocation] = useState('Nagrik DryFruits, Chinchpada, Airoli, Navi Mumbai, Thane Taluka, Thane, Maharashtra, 400708, India');
+  const [currentCoordinates, setCurrentCoordinates] = useState<{lat: number, lng: number} | undefined>();
   const [selectedAddresses, setSelectedAddresses] = useState<{pickup?: any, drop?: any}>({});
 
   const selectedServices = Object.entries(cart).map(([id, item]: [string, { quantity: number; extraItems: number; extraInventory?: { [key: string]: number } }]) => {
@@ -276,6 +277,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
           setIsAddressSheetOpen(false);
         }}
         detectedLocation={currentLocation}
+        detectedCoordinates={currentCoordinates}
         onOpenMap={(category) => {
           setLocationScreenCategory(category);
           setIsLocationScreenOpen(true);
@@ -288,8 +290,9 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
           currentLocation={currentLocation}
           isDropAddress={locationScreenCategory === 'Drop'}
           onClose={() => setIsLocationScreenOpen(false)}
-          onUpdateLocation={(loc) => {
+          onUpdateLocation={(loc, coords) => {
             setCurrentLocation(loc);
+            setCurrentCoordinates(coords);
             setIsLocationScreenOpen(false);
           }}
         />

@@ -292,18 +292,36 @@ const App: React.FC = () => {
       if (!booking.pickupAddress || !booking.dropAddress) return;
       
       try {
-        const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(booking.pickupAddress)}`);
-        const pickupData = await pickupRes.json();
+        let lat1, lon1, lat2, lon2;
+
+        if (booking.pickupCoordinates) {
+          lat1 = booking.pickupCoordinates.lat;
+          lon1 = booking.pickupCoordinates.lng;
+        } else {
+          // Extract the base address without house number and landmark for better geocoding results
+          const queryAddress = booking.pickupAddress.split(', ').slice(-4).join(', ');
+          const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryAddress || booking.pickupAddress)}`);
+          const pickupData = await pickupRes.json();
+          if (pickupData.length > 0) {
+            lat1 = parseFloat(pickupData[0].lat);
+            lon1 = parseFloat(pickupData[0].lon);
+          }
+        }
+
+        if (booking.dropCoordinates) {
+          lat2 = booking.dropCoordinates.lat;
+          lon2 = booking.dropCoordinates.lng;
+        } else {
+          const queryAddress = booking.dropAddress.split(', ').slice(-4).join(', ');
+          const dropRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryAddress || booking.dropAddress)}`);
+          const dropData = await dropRes.json();
+          if (dropData.length > 0) {
+            lat2 = parseFloat(dropData[0].lat);
+            lon2 = parseFloat(dropData[0].lon);
+          }
+        }
         
-        const dropRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(booking.dropAddress)}`);
-        const dropData = await dropRes.json();
-        
-        if (pickupData.length > 0 && dropData.length > 0) {
-          const lat1 = parseFloat(pickupData[0].lat);
-          const lon1 = parseFloat(pickupData[0].lon);
-          const lat2 = parseFloat(dropData[0].lat);
-          const lon2 = parseFloat(dropData[0].lon);
-          
+        if (lat1 !== undefined && lon1 !== undefined && lat2 !== undefined && lon2 !== undefined) {
           const R = 6371; 
           const dLat = (lat2 - lat1) * Math.PI / 180;
           const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -331,7 +349,7 @@ const App: React.FC = () => {
     }, 1500);
 
     return () => clearTimeout(timeoutId);
-  }, [booking.pickupAddress, booking.dropAddress]);
+  }, [booking.pickupAddress, booking.dropAddress, booking.pickupCoordinates, booking.dropCoordinates]);
 
   const priceEstimate = useMemo((): PriceEstimate => {
     const totalItems = booking.inventory.reduce((acc, item) => acc + item.quantity, 0);
@@ -767,7 +785,9 @@ const App: React.FC = () => {
             setBooking({
               ...booking,
               pickupAddress: pickup ? `${pickup.houseNo}, ${pickup.landmark ? pickup.landmark + ', ' : ''}${pickup.fullAddress}` : booking.pickupAddress,
-              dropAddress: drop ? `${drop.houseNo}, ${drop.landmark ? drop.landmark + ', ' : ''}${drop.fullAddress}` : booking.dropAddress
+              pickupCoordinates: pickup?.coordinates,
+              dropAddress: drop ? `${drop.houseNo}, ${drop.landmark ? drop.landmark + ', ' : ''}${drop.fullAddress}` : booking.dropAddress,
+              dropCoordinates: drop?.coordinates
             });
             setView('BOOKING_FLOW');
             setCurrentStep(BookingStep.DATE_TIME);

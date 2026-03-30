@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Props {
-  onConfirm: (address: string) => void;
+  onConfirm: (address: string, coordinates?: { lat: number, lng: number }) => void;
   onClose: () => void;
 }
 
@@ -10,6 +10,7 @@ const MapPickerModal: React.FC<Props> = ({ onConfirm, onClose }) => {
   const leafletMap = useRef<any>(null);
   const markerRef = useRef<any>(null);
   const [address, setAddress] = useState<string>('Searching location...');
+  const [coordinates, setCoordinates] = useState<{lat: number, lng: number} | undefined>();
   const [loading, setLoading] = useState(true);
 
   const reverseGeocode = async (lat: number, lng: number) => {
@@ -18,6 +19,7 @@ const MapPickerModal: React.FC<Props> = ({ onConfirm, onClose }) => {
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
       const data = await response.json();
       setAddress(data.display_name || 'Address not found');
+      setCoordinates({ lat, lng });
     } catch (error) {
       setAddress('Error fetching address');
     } finally {
@@ -129,7 +131,7 @@ const MapPickerModal: React.FC<Props> = ({ onConfirm, onClose }) => {
               Locate Me
             </button>
             <button 
-              onClick={() => onConfirm(address)}
+              onClick={() => onConfirm(address, coordinates)}
               disabled={loading || address === 'Searching location...'}
               className="flex-1 px-10 py-4 bg-blue-600 text-white rounded-[20px] font-black text-lg shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all disabled:opacity-50"
             >

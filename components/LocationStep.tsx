@@ -19,15 +19,15 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
     return lower.includes('mumbai') || lower.includes('navi mumbai');
   };
 
-  const handleSetLocationFromMap = (address: string) => {
+  const handleSetLocationFromMap = (address: string, coordinates?: { lat: number, lng: number }) => {
     if (activePicker === 'pickup') {
       if (!isMumbai(address)) {
         alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please select a location within these areas.");
         return;
       }
-      setBooking({ ...booking, pickupAddress: address });
+      setBooking({ ...booking, pickupAddress: address, pickupCoordinates: coordinates });
     } else {
-      setBooking({ ...booking, dropAddress: address });
+      setBooking({ ...booking, dropAddress: address, dropCoordinates: coordinates });
     }
     setActivePicker(null);
   };
@@ -45,9 +45,9 @@ const LocationStep: React.FC<Props> = ({ booking, setBooking }) => {
             setBooking({ ...booking, pickupAddress: '' });
             return;
           }
-          setBooking({ ...booking, pickupAddress: address });
+          setBooking({ ...booking, pickupAddress: address, pickupCoordinates: { lat: pos.coords.latitude, lng: pos.coords.longitude } });
         } catch (e) {
-          setBooking({ ...booking, pickupAddress: 'Location Found (Custom)' });
+          setBooking({ ...booking, pickupAddress: 'Location Found (Custom)', pickupCoordinates: { lat: pos.coords.latitude, lng: pos.coords.longitude } });
         }
       });
     }

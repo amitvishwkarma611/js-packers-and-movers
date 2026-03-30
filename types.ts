@@ -17,7 +17,9 @@ export interface MoveItem {
 
 export interface BookingDetails {
   pickupAddress: string;
+  pickupCoordinates?: { lat: number, lng: number };
   dropAddress: string;
+  dropCoordinates?: { lat: number, lng: number };
   distance: number;
   moveDate: string;
   floorPickup: number;

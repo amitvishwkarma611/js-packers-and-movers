@@ -6,7 +6,7 @@ interface LocationSelectionScreenProps {
   currentLocation: string;
   isDropAddress?: boolean;
   onClose: () => void;
-  onUpdateLocation: (location: string) => void;
+  onUpdateLocation: (location: string, coordinates?: { lat: number, lng: number }) => void;
 }
 
 const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ currentLocation, isDropAddress, onClose, onUpdateLocation }) => {
@@ -14,6 +14,7 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
   const [showManualSearch, setShowManualSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAddress, setSelectedAddress] = useState(currentLocation);
+  const [selectedCoordinates, setSelectedCoordinates] = useState<{lat: number, lng: number} | undefined>();
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMap = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -31,6 +32,7 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
       const data = await response.json();
       const addr = data.display_name || 'Address not found';
       setSelectedAddress(addr);
+      setSelectedCoordinates({ lat, lng });
     } catch (error) {
       setSelectedAddress('Error fetching address');
     } finally {
@@ -107,14 +109,27 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
     }
   };
 
-  const handleManualSearch = (e: React.FormEvent) => {
+  const handleManualSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       if (!isDropAddress && !isMumbai(searchQuery)) {
         alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please search for a location within these areas.");
         return;
       }
-      onUpdateLocation(searchQuery);
+      
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lng = parseFloat(data[0].lon);
+          onUpdateLocation(searchQuery, { lat, lng });
+        } else {
+          onUpdateLocation(searchQuery);
+        }
+      } catch (error) {
+        onUpdateLocation(searchQuery);
+      }
       onClose();
     }
   };
@@ -124,7 +139,7 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
       alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please select a location within these areas.");
       return;
     }
-    onUpdateLocation(selectedAddress);
+    onUpdateLocation(selectedAddress, selectedCoordinates);
     onClose();
   };
 

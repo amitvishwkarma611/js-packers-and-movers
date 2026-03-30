@@ -7,6 +7,7 @@ interface AddressBottomSheetProps {
   onClose: () => void;
   onSave: (addressDetails: any) => void;
   detectedLocation: string;
+  detectedCoordinates?: { lat: number, lng: number };
   onOpenMap: (category: 'Pickup' | 'Drop') => void;
 }
 
@@ -15,6 +16,7 @@ const AddressBottomSheet: React.FC<AddressBottomSheetProps> = ({
   onClose, 
   onSave, 
   detectedLocation,
+  detectedCoordinates,
   onOpenMap
 }) => {
   const [houseNo, setHouseNo] = useState('');
@@ -48,7 +50,7 @@ const AddressBottomSheet: React.FC<AddressBottomSheetProps> = ({
   }, [isOpen]);
 
   const validateAndSave = () => {
-    const currentDetails = { houseNo, landmark, name, floor, hasLift, addressType, fullAddress: detectedLocation };
+    const currentDetails = { houseNo, landmark, name, floor, hasLift, addressType, fullAddress: detectedLocation, coordinates: detectedCoordinates };
     
     if (addressCategory === 'Pickup') {
       if (dropDetails && 
