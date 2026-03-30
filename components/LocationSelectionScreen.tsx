@@ -4,11 +4,12 @@ import { ArrowLeft, MapPin, Navigation, Check } from 'lucide-react';
 
 interface LocationSelectionScreenProps {
   currentLocation: string;
+  isDropAddress?: boolean;
   onClose: () => void;
   onUpdateLocation: (location: string) => void;
 }
 
-const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ currentLocation, onClose, onUpdateLocation }) => {
+const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ currentLocation, isDropAddress, onClose, onUpdateLocation }) => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [showManualSearch, setShowManualSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -109,8 +110,8 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
   const handleManualSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      if (!isMumbai(searchQuery)) {
-        alert("We currently only provide services in Mumbai & Navi Mumbai. Please search for a location within these areas.");
+      if (!isDropAddress && !isMumbai(searchQuery)) {
+        alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please search for a location within these areas.");
         return;
       }
       onUpdateLocation(searchQuery);
@@ -119,8 +120,8 @@ const LocationSelectionScreen: React.FC<LocationSelectionScreenProps> = ({ curre
   };
 
   const confirmLocation = () => {
-    if (!isMumbai(selectedAddress)) {
-      alert("We currently only provide services in Mumbai & Navi Mumbai. Please select a location within these areas.");
+    if (!isDropAddress && !isMumbai(selectedAddress)) {
+      alert("We currently only provide pickup services from Mumbai & Navi Mumbai. Please select a location within these areas.");
       return;
     }
     onUpdateLocation(selectedAddress);

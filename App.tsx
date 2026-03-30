@@ -309,7 +309,7 @@ const App: React.FC = () => {
     const packingCharges = booking.serviceType === 'Premium' ? 1000 : 0;
     
     const distance = booking.distance || 0;
-    const transportation = distance > 0 ? distance * 20 : 1500 + (totalItems * 50); // Fallback if no distance
+    const transportation = distance <= 10 ? 0 : (distance - 10) * 30;
 
     const subTotal = basePrice + itemsCost + cartonsCost + transportation + floorFactor + liftFactor + packingCharges;
     const insuranceCost = booking.hasInsurance ? subTotal * 0.02 : 0;

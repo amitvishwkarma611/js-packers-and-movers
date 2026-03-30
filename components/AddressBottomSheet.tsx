@@ -7,7 +7,7 @@ interface AddressBottomSheetProps {
   onClose: () => void;
   onSave: (addressDetails: any) => void;
   detectedLocation: string;
-  onOpenMap: () => void;
+  onOpenMap: (category: 'Pickup' | 'Drop') => void;
 }
 
 const AddressBottomSheet: React.FC<AddressBottomSheetProps> = ({ 
@@ -131,7 +131,7 @@ const AddressBottomSheet: React.FC<AddressBottomSheetProps> = ({
             <div className="px-6 h-16 flex items-center justify-between border-b border-slate-50">
               <h2 className="text-base font-bold text-slate-900">Confirm Your Address</h2>
               <button 
-                onClick={onOpenMap}
+                onClick={() => onOpenMap(addressCategory)}
                 className="text-blue-600 font-bold text-sm hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
               >
                 Change

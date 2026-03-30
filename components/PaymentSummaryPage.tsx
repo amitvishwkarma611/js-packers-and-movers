@@ -16,6 +16,7 @@ interface PaymentSummaryPageProps {
 const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services, onBack, onSelectAddress }) => {
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
   const [isLocationScreenOpen, setIsLocationScreenOpen] = useState(false);
+  const [locationScreenCategory, setLocationScreenCategory] = useState<'Pickup' | 'Drop'>('Pickup');
   const [currentLocation, setCurrentLocation] = useState('Nagrik DryFruits, Chinchpada, Airoli, Navi Mumbai, Thane Taluka, Thane, Maharashtra, 400708, India');
   const [selectedAddresses, setSelectedAddresses] = useState<{pickup?: any, drop?: any}>({});
 
@@ -275,13 +276,17 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
           setIsAddressSheetOpen(false);
         }}
         detectedLocation={currentLocation}
-        onOpenMap={() => setIsLocationScreenOpen(true)}
+        onOpenMap={(category) => {
+          setLocationScreenCategory(category);
+          setIsLocationScreenOpen(true);
+        }}
       />
 
       {/* Location Selection Screen */}
       {isLocationScreenOpen && (
         <LocationSelectionScreen
           currentLocation={currentLocation}
+          isDropAddress={locationScreenCategory === 'Drop'}
           onClose={() => setIsLocationScreenOpen(false)}
           onUpdateLocation={(loc) => {
             setCurrentLocation(loc);
