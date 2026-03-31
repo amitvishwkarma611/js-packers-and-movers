@@ -48,7 +48,14 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
   }, 0);
 
   const visitingCharges = 0;
-  const totalEstimated = itemTotal + visitingCharges;
+  
+  const pickupFloor = parseInt(selectedAddresses.pickup?.floor || '0') || 0;
+  const dropFloor = parseInt(selectedAddresses.drop?.floor || '0') || 0;
+  const pickupFloorCharge = selectedAddresses.pickup?.hasLift ? 0 : pickupFloor * 250;
+  const dropFloorCharge = selectedAddresses.drop?.hasLift ? 0 : dropFloor * 250;
+  const floorCharges = pickupFloorCharge + dropFloorCharge;
+  
+  const totalEstimated = itemTotal + visitingCharges + floorCharges;
   const bookingAmount = 0;
 
   if (selectedServices.length === 0) {
@@ -196,6 +203,12 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
             <span>Visiting charges</span>
             <span>₹{visitingCharges}</span>
           </div>
+          {floorCharges > 0 && (
+            <div className="flex justify-between text-slate-600 font-medium text-sm">
+              <span>Floor Charge</span>
+              <span>₹{floorCharges.toLocaleString()}</span>
+            </div>
+          )}
           
           <div className="h-px bg-slate-100 border-dashed border-t my-4" />
           

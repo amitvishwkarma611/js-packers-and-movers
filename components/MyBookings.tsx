@@ -149,7 +149,7 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     const finalY = (doc as any).lastAutoTable.finalY + 15;
     
     doc.setFillColor(248, 250, 252);
-    doc.rect(120, finalY, 75, 62, 'F');
+    doc.rect(120, finalY, 75, 69, 'F');
     
     const summaryX = 125;
     let breakdownY = finalY + 10;
@@ -166,6 +166,10 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
     breakdownY += 7;
     doc.text('Labor & Handling:', summaryX, breakdownY);
     doc.text(`INR ${estimate.laborCharges.toLocaleString()}`, 190, breakdownY, { align: 'right' });
+    
+    breakdownY += 7;
+    doc.text('Floor Charge:', summaryX, breakdownY);
+    doc.text(`INR ${estimate.floorCharges.toLocaleString()}`, 190, breakdownY, { align: 'right' });
     
     breakdownY += 7;
     doc.text('Extra Items Price:', summaryX, breakdownY);

@@ -203,17 +203,7 @@ const ReviewStep: React.FC<Props> = ({ booking, setBooking, estimate, selectedSe
             
             <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estimated Distance (KM)</span>
-              {setBooking ? (
-                <input 
-                  type="number" 
-                  min="0"
-                  className="w-24 text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none text-right"
-                  value={booking.distance === 0 ? 0 : (booking.distance || '')}
-                  onChange={(e) => setBooking({...booking, distance: parseInt(e.target.value) || 0})}
-                />
-              ) : (
-                <span className="text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">{booking.distance} KM</span>
-              )}
+              <span className="text-sm font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">{booking.distance}</span>
             </div>
           </div>
 
@@ -265,6 +255,10 @@ const ReviewStep: React.FC<Props> = ({ booking, setBooking, estimate, selectedSe
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400 font-bold">Labor & Handling</span>
                 <span className="font-black">₹{estimate.laborCharges.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400 font-bold">Floor Charge</span>
+                <span className="font-black">₹{estimate.floorCharges.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400 font-bold">Extra Items Price</span>

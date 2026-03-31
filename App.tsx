@@ -135,7 +135,7 @@ const App: React.FC = () => {
         inventory: [{ id: '1', name: 'Double Bed', category: 'Bedroom', quantity: 1, weightClass: 'Heavy' }],
         serviceType: 'Premium'
       },
-      estimate: { basePrice: 2000, packingCharges: 1000, laborCharges: 800, transportation: 1500, total: 5300 },
+      estimate: { basePrice: 2000, packingCharges: 1000, laborCharges: 800, floorCharges: 0, transportation: 1500, extraItemsPrice: 0, total: 5300 },
       status: 'Completed',
       createdAt: new Date(Date.now() - 86400000).toISOString()
     }
@@ -248,7 +248,9 @@ const App: React.FC = () => {
             basePrice: data.servicePrice || 0,
             packingCharges: 0,
             laborCharges: 0,
+            floorCharges: 0,
             transportation: 0,
+            extraItemsPrice: 0,
             total: data.servicePrice || 0
           },
           status: data.status || 'Upcoming',
@@ -368,7 +370,9 @@ const App: React.FC = () => {
       }
     });
 
-    const floorFactor = (booking.floorPickup + booking.floorDrop) * 200;
+    const pickupFloorCharge = booking.hasLiftPickup ? 0 : booking.floorPickup * 250;
+    const dropFloorCharge = booking.hasLiftDrop ? 0 : booking.floorDrop * 250;
+    const floorFactor = pickupFloorCharge + dropFloorCharge;
     const liftFactor = (!booking.hasLiftPickup || !booking.hasLiftDrop) ? 500 : 0;
     
     const basePrice = 2000;
@@ -383,7 +387,8 @@ const App: React.FC = () => {
     return {
       basePrice,
       packingCharges,
-      laborCharges: floorFactor + liftFactor,
+      laborCharges: liftFactor,
+      floorCharges: floorFactor,
       transportation,
       extraItemsPrice: itemsCost + cartonsCost,
       total: subTotal + insuranceCost
@@ -416,20 +421,24 @@ const App: React.FC = () => {
 
       const distance = booking.distance || 0;
       const transportation = distance <= 10 ? 0 : (distance - 10) * 30;
+      const pickupFloorCharge = booking.hasLiftPickup ? 0 : booking.floorPickup * 250;
+      const dropFloorCharge = booking.hasLiftDrop ? 0 : booking.floorDrop * 250;
+      const floorFactor = pickupFloorCharge + dropFloorCharge;
 
-      const total = totalBase + totalExtra + transportation;
+      const total = totalBase + totalExtra + transportation + floorFactor;
 
       return {
         basePrice: totalBase,
         packingCharges: 0,
         laborCharges: 0,
+        floorCharges: floorFactor,
         transportation: transportation,
         extraItemsPrice: totalExtra,
         total: total
       };
     }
     return priceEstimate;
-  }, [cart, priceEstimate, booking.distance]);
+  }, [cart, priceEstimate, booking.distance, booking.floorPickup, booking.floorDrop, booking.hasLiftPickup, booking.hasLiftDrop]);
 
   const updateQuantity = (id: string, delta: number) => {
     const updated = booking.inventory.map(item => {
@@ -786,8 +795,12 @@ const App: React.FC = () => {
               ...booking,
               pickupAddress: pickup ? `${pickup.houseNo}, ${pickup.landmark ? pickup.landmark + ', ' : ''}${pickup.fullAddress}` : booking.pickupAddress,
               pickupCoordinates: pickup?.coordinates,
+              floorPickup: pickup ? parseInt(pickup.floor || '0') || 0 : booking.floorPickup,
+              hasLiftPickup: pickup ? pickup.hasLift : booking.hasLiftPickup,
               dropAddress: drop ? `${drop.houseNo}, ${drop.landmark ? drop.landmark + ', ' : ''}${drop.fullAddress}` : booking.dropAddress,
-              dropCoordinates: drop?.coordinates
+              dropCoordinates: drop?.coordinates,
+              floorDrop: drop ? parseInt(drop.floor || '0') || 0 : booking.floorDrop,
+              hasLiftDrop: drop ? drop.hasLift : booking.hasLiftDrop
             });
             setView('BOOKING_FLOW');
             setCurrentStep(BookingStep.DATE_TIME);
