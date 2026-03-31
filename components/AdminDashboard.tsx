@@ -30,8 +30,8 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
     return matchesFilter && matchesSearch;
   }).sort((a, b) => {
     if (sortConfig.key === 'date') {
-      const dateA = a.createdAt?.seconds || 0;
-      const dateB = b.createdAt?.seconds || 0;
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
       return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
     }
     if (sortConfig.key === 'price') {

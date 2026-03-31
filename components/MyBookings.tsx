@@ -14,7 +14,7 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
   const [bookingToCancel, setBookingToCancel] = useState<ConfirmedBooking | null>(null);
 
   const sortedBookings = [...bookings].sort((a, b) => 
-    new Date(b.details.moveDate).getTime() - new Date(a.details.moveDate).getTime()
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   const handleCancel = () => {
