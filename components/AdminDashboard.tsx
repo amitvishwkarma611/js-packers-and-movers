@@ -187,7 +187,7 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                     <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
                       b.status === 'Completed' ? 'bg-emerald-50 text-emerald-600' :
                       b.status === 'Accepted' ? 'bg-blue-50 text-blue-600' : 
-                      b.status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+                      (b.status === 'Pending' || b.status === 'Upcoming') ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
                     }`}>
                       {b.status}
                     </span>

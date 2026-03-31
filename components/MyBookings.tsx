@@ -250,8 +250,10 @@ const MyBookings: React.FC<Props> = ({ bookings, onBack, onUpdateBookingStatus }
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">
                     <span className={`px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest ${
-                      booking.status === 'Upcoming' ? 'bg-emerald-50 text-emerald-600' : 
-                      booking.status === 'Cancelled' ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500'
+                      booking.status === 'Completed' ? 'bg-emerald-50 text-emerald-600' : 
+                      booking.status === 'Accepted' ? 'bg-blue-50 text-blue-600' : 
+                      (booking.status === 'Pending' || booking.status === 'Upcoming') ? 'bg-amber-50 text-amber-600' : 
+                      (booking.status === 'Cancelled' || booking.status === 'Rejected') ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500'
                     }`}>
                       {booking.status}
                     </span>
