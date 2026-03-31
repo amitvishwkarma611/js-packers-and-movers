@@ -17,7 +17,7 @@ const PaymentSummaryPage: React.FC<PaymentSummaryPageProps> = ({ cart, services,
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
   const [isLocationScreenOpen, setIsLocationScreenOpen] = useState(false);
   const [locationScreenCategory, setLocationScreenCategory] = useState<'Pickup' | 'Drop'>('Pickup');
-  const [currentLocation, setCurrentLocation] = useState('Nagrik DryFruits, Chinchpada, Airoli, Navi Mumbai, Thane Taluka, Thane, Maharashtra, 400708, India');
+  const [currentLocation, setCurrentLocation] = useState('');
   const [currentCoordinates, setCurrentCoordinates] = useState<{lat: number, lng: number} | undefined>();
   const [selectedAddresses, setSelectedAddresses] = useState<{pickup?: any, drop?: any}>({});
 
