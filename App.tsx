@@ -285,7 +285,8 @@ const App: React.FC = () => {
     hasLiftPickup: true,
     hasLiftDrop: true,
     inventory: [],
-    serviceType: 'Standard'
+    serviceType: 'Standard',
+    hasInsurance: false
   });
 
   // Auto-calculate distance
@@ -523,6 +524,10 @@ const App: React.FC = () => {
         // Also store the detailed objects so the UI can render them
         details: { 
           ...booking,
+          pickupCoordinates: booking.pickupCoordinates || null,
+          dropCoordinates: booking.dropCoordinates || null,
+          moveSlot: booking.moveSlot || null,
+          userMobile: booking.userMobile || null,
           selectedServices: isFromCart ? selectedServices : []
         },
         estimate: displayEstimate
@@ -542,7 +547,7 @@ const App: React.FC = () => {
       setBooking({
         pickupAddress: '', dropAddress: '', moveDate: new Date().toISOString().split('T')[0],
         floorPickup: 0, floorDrop: 0, hasLiftPickup: true, hasLiftDrop: true,
-        inventory: [], serviceType: 'Standard'
+        inventory: [], serviceType: 'Standard', hasInsurance: false, distance: 0
       });
       setCurrentStep(BookingStep.LOCATION);
     } catch (error: any) {
