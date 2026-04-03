@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { ConfirmedBooking } from '../types';
 import { ICONS } from '../constants';
+import { generateInvoicePDF } from '../services/invoice';
 
 interface Props {
   bookings: ConfirmedBooking[];
@@ -13,6 +14,43 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
   const [selectedBooking, setSelectedBooking] = useState<ConfirmedBooking | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: 'date' | 'price' | 'client'; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
+
+  const handleWhatsAppShare = async (e: React.MouseEvent, b: ConfirmedBooking) => {
+    e.preventDefault();
+    if (!b.userMobile) {
+      alert("Mobile number not provided for this booking.");
+      return;
+    }
+
+    const text = b.status === 'Accepted' 
+      ? `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`
+      : `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been successfully completed! Please find your invoice attached. We hope you had a great experience with us. Thank you for choosing us!`;
+
+    if (b.status === 'Completed') {
+      try {
+        const doc = generateInvoicePDF(b);
+        const pdfBlob = doc.output('blob');
+        const file = new File([pdfBlob], `Jaiswal_Invoice_${b.id.slice(-6).toUpperCase()}.pdf`, { type: 'application/pdf' });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Invoice',
+            text: text,
+          });
+          return;
+        } else {
+          // Fallback: download the file and open WhatsApp
+          doc.save(`Jaiswal_Invoice_${b.id.slice(-6).toUpperCase()}.pdf`);
+          alert("Invoice downloaded. Please attach it manually in WhatsApp.");
+        }
+      } catch (err) {
+        console.error("Error sharing invoice:", err);
+      }
+    }
+    
+    window.open(`https://wa.me/${getWhatsAppNumber(b.userMobile)}?text=${encodeURIComponent(text)}`, '_blank');
+  };
 
   const stats = {
     total: bookings.length,
@@ -223,19 +261,8 @@ const AdminDashboard: React.FC<Props> = ({ bookings, onUpdateStatus }) => {
                       {(b.status === 'Accepted' || b.status === 'Completed') && (
                         <>
                           <a 
-                            href={b.userMobile ? `https://wa.me/${getWhatsAppNumber(b.userMobile)}?text=${encodeURIComponent(
-                              b.status === 'Accepted' 
-                                ? `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been accepted! Our team will contact you shortly to coordinate the details. Thank you for choosing us!`
-                                : `Hello ${b.userName}, your move request (ID: #${b.id.slice(-6).toUpperCase()}) with JS Packers and Movers has been successfully completed! We hope you had a great experience with us. Thank you for choosing us!`
-                            )}` : '#'} 
-                            target={b.userMobile ? "_blank" : undefined}
-                            rel="noopener noreferrer"
-                            onClick={(e) => {
-                              if (!b.userMobile) {
-                                e.preventDefault();
-                                alert("Mobile number not provided for this booking.");
-                              }
-                            }}
+                            href="#"
+                            onClick={(e) => handleWhatsAppShare(e, b)}
                             className={`p-2 rounded-xl transition-all ${b.userMobile ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white' : 'bg-slate-50 text-slate-300 cursor-not-allowed'}`}
                             title={b.userMobile ? "WhatsApp Client" : "Mobile Number Missing"}
                           >

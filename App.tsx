@@ -534,7 +534,7 @@ const App: React.FC = () => {
       if (method === 'METAMASK') {
         await initMetaMaskPayment();
       } else if (method === 'RAZORPAY') {
-        await initRazorpayPayment(displayEstimate.total);
+        await initRazorpayPayment(displayEstimate.total * 0.1);
       }
 
       const isFromCart = Object.keys(cart).length > 0;
@@ -986,7 +986,7 @@ const App: React.FC = () => {
                           </svg>
                         )}
                         {currentStep === BookingStep.REVIEW 
-                          ? (isProcessingPayment ? 'Processing...' : 'Confirm & Book') 
+                          ? (isProcessingPayment ? 'Processing...' : `Pay ₹${Math.round(displayEstimate.total * 0.1).toLocaleString()} & Book`) 
                           : 'Continue'}
                       </button>
                     </div>

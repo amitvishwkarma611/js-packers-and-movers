@@ -279,6 +279,10 @@ const ReviewStep: React.FC<Props> = ({ booking, setBooking, estimate, selectedSe
                 <span className="text-base font-black uppercase tracking-widest text-blue-400">Total Amount</span>
                 <span className="text-3xl font-black">₹{estimate.total.toLocaleString()}</span>
               </div>
+              <div className="flex justify-between items-center mt-4 p-4 bg-blue-50/10 rounded-xl border border-blue-500/20">
+                <span className="text-sm font-black uppercase tracking-widest text-blue-400">Advance to Pay (10%)</span>
+                <span className="text-xl font-black text-blue-400">₹{Math.round(estimate.total * 0.1).toLocaleString()}</span>
+              </div>
             </div>
             
             <div className="bg-white/5 p-4 rounded-2xl border border-white/10">

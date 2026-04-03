@@ -55,3 +55,9 @@ export interface ConfirmedBooking {
   userEmail?: string;
   userMobile?: string;
 }
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
