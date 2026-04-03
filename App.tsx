@@ -484,7 +484,45 @@ const App: React.FC = () => {
     }
   };
 
-  const handleConfirmBooking = async (method: 'METAMASK' | 'CASH' = 'CASH') => {
+  const initRazorpayPayment = async (amount: number) => {
+    return new Promise((resolve, reject) => {
+      if (!window.Razorpay) {
+        reject(new Error("Razorpay SDK failed to load. Are you online?"));
+        return;
+      }
+      const options = {
+        key: "rzp_test_YOUR_KEY_ID", // Replace with your actual Razorpay Key ID
+        amount: Math.round(amount * 100), // Amount is in currency subunits. Default currency is INR.
+        currency: "INR",
+        name: "Jaiswal Packers and Movers",
+        description: "Booking Payment",
+        image: "/logo.png",
+        handler: function (response: any) {
+          resolve(response);
+        },
+        prefill: {
+          name: user?.name || "",
+          email: user?.email || "",
+          contact: booking.userMobile || user?.mobileNumber || ""
+        },
+        theme: {
+          color: "#1e40af"
+        },
+        modal: {
+          ondismiss: function() {
+            reject(new Error("Payment cancelled by user."));
+          }
+        }
+      };
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response: any){
+        reject(new Error(response.error.description));
+      });
+      rzp1.open();
+    });
+  };
+
+  const handleConfirmBooking = async (method: 'METAMASK' | 'CASH' | 'RAZORPAY' = 'CASH') => {
     if (!auth.currentUser) {
       setPaymentError("You must be logged in to book.");
       return;
@@ -495,6 +533,8 @@ const App: React.FC = () => {
     try {
       if (method === 'METAMASK') {
         await initMetaMaskPayment();
+      } else if (method === 'RAZORPAY') {
+        await initRazorpayPayment(displayEstimate.total);
       }
 
       const isFromCart = Object.keys(cart).length > 0;
@@ -515,7 +555,7 @@ const App: React.FC = () => {
         bookingDate: booking.moveDate,
         bookingTime: booking.moveSlot || '10:00 AM',
         status: 'Pending',
-        paymentStatus: method === 'CASH' ? 'Pay after service' : 'Paid via MetaMask',
+        paymentStatus: method === 'CASH' ? 'Pay after service' : (method === 'RAZORPAY' ? 'Paid via Razorpay' : 'Paid via MetaMask'),
         createdAt: serverTimestamp(),
         userUID: auth.currentUser.uid,
         userName: user?.name || user?.email?.split('@')[0] || 'User',
@@ -568,7 +608,7 @@ const App: React.FC = () => {
     else if (currentStep === BookingStep.INVENTORY) setCurrentStep(BookingStep.SERVICE_TYPE);
     else if (currentStep === BookingStep.SERVICE_TYPE) setCurrentStep(BookingStep.DATE_TIME);
     else if (currentStep === BookingStep.DATE_TIME) setCurrentStep(BookingStep.REVIEW);
-    else if (currentStep === BookingStep.REVIEW) { handleConfirmBooking('CASH'); }
+    else if (currentStep === BookingStep.REVIEW) { handleConfirmBooking('RAZORPAY'); }
   };
 
   const prevStep = () => {
