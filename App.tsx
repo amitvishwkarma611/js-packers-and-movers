@@ -485,40 +485,61 @@ const App: React.FC = () => {
   };
 
   const initRazorpayPayment = async (amount: number) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (!window.Razorpay) {
         reject(new Error("Razorpay SDK failed to load. Are you online?"));
         return;
       }
-      const options = {
-        key: "rzp_test_YOUR_KEY_ID", // Replace with your actual Razorpay Key ID
-        amount: Math.round(amount * 100), // Amount is in currency subunits. Default currency is INR.
-        currency: "INR",
-        name: "Jaiswal Packers and Movers",
-        description: "Booking Payment",
-        image: "/logo.png",
-        handler: function (response: any) {
-          resolve(response);
-        },
-        prefill: {
-          name: user?.name || "",
-          email: user?.email || "",
-          contact: booking.userMobile || user?.mobileNumber || ""
-        },
-        theme: {
-          color: "#1e40af"
-        },
-        modal: {
-          ondismiss: function() {
-            reject(new Error("Payment cancelled by user."));
-          }
+
+      try {
+        const response = await fetch('/api/create-razorpay-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ amount }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create order');
         }
-      };
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response: any){
-        reject(new Error(response.error.description));
-      });
-      rzp1.open();
+
+        const { order, keyId } = await response.json();
+
+        const options = {
+          key: keyId,
+          amount: order.amount,
+          currency: order.currency,
+          name: "Jaiswal Packers and Movers",
+          description: "Booking Payment",
+          image: "/logo.png",
+          order_id: order.id,
+          handler: function (response: any) {
+            resolve(response);
+          },
+          prefill: {
+            name: user?.name || "",
+            email: user?.email || "",
+            contact: booking.userMobile || user?.mobileNumber || ""
+          },
+          theme: {
+            color: "#1e40af"
+          },
+          modal: {
+            ondismiss: function() {
+              reject(new Error("Payment cancelled by user."));
+            }
+          }
+        };
+        const rzp1 = new window.Razorpay(options);
+        rzp1.on('payment.failed', function (response: any){
+          reject(new Error(response.error.description));
+        });
+        rzp1.open();
+      } catch (error: any) {
+        reject(error);
+      }
     });
   };
 

@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
+import Razorpay from 'razorpay';
 
 async function startServer() {
   const app = express();
@@ -30,6 +31,33 @@ async function startServer() {
     } catch (error) {
       console.error('Error saving icon:', error);
       res.status(500).json({ error: 'Failed to save icon' });
+    }
+  });
+
+  app.post('/api/create-razorpay-order', async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        return res.status(500).json({ error: 'Razorpay keys are not configured' });
+      }
+
+      const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      });
+
+      const options = {
+        amount: Math.round(amount * 100), // amount in smallest currency unit
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`
+      };
+
+      const order = await razorpay.orders.create(options);
+      res.json({ order, keyId: process.env.RAZORPAY_KEY_ID });
+    } catch (error) {
+      console.error('Error creating Razorpay order:', error);
+      res.status(500).json({ error: 'Failed to create Razorpay order' });
     }
   });
 
